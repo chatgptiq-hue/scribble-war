@@ -55,7 +55,7 @@
         }
 
         .game-title h1 {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -73,20 +73,20 @@
         }
 
         .game-subtitle {
-            color: #666;
-            font-size: 8px;
+            color: #999;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-top: 1px;
+            margin-top: 2px;
         }
 
         /* Vertical Pill Layout */
         .cards-grid {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 0;
             flex: 1;
-            justify-content: center;
+            justify-content: space-evenly;
             padding: 2px 10px;
             width: 100%;
         }
@@ -152,7 +152,7 @@
         /* Progress Bar - Pill Shape - Dark Background */
         .progress-container {
             width: 100%;
-            height: 30px;
+            height: 36px;
             background: rgba(0, 0, 0, 0.6);
             border-radius: 50px;
             position: relative;
@@ -166,26 +166,26 @@
         /* Country name inside bar */
         .bar-country-name {
             position: absolute;
-            right: 35px;
+            right: 30px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 9px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.7);
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
             z-index: 2;
             pointer-events: none;
         }
 
         .bar-boost-emoji {
             position: absolute;
-            right: 8px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 14px;
-            opacity: 0.7;
+            font-size: 16px;
+            opacity: 0.8;
             z-index: 2;
             pointer-events: none;
         }
@@ -400,8 +400,8 @@
 
         /* Country Image on Bar */
         .country-image {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: -3px;
@@ -432,7 +432,7 @@
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 900;
             color: #fff;
             text-shadow: 0 2px 4px rgba(0,0,0,0.7);
@@ -462,7 +462,7 @@
 
         .leaderboard h2 {
             color: #00ffff;
-            font-size: 16px;
+            font-size: 22px;
             margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 3px;
@@ -471,7 +471,7 @@
 
         .leaderboard-subtitle {
             color: #888;
-            font-size: 9px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -480,13 +480,16 @@
             flex: 1;
             overflow-y: auto;
             padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
         }
 
         .ranking-item {
             display: flex;
             align-items: center;
-            padding: 5px 8px;
-            margin-bottom: 3px;
+            padding: 6px 8px;
+            margin-bottom: 0;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -512,14 +515,14 @@
         }
 
         .rank-badge {
-            width: 22px;
-            height: 22px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: 900;
-            font-size: 10px;
+            font-size: 12px;
             margin-right: 6px;
             flex-shrink: 0;
         }
@@ -531,8 +534,8 @@
 
         /* Circular Image in Leaderboard */
         .ranking-image {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 8px;
@@ -548,7 +551,7 @@
         }
 
         .ranking-name {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 700;
             color: #fff;
             white-space: nowrap;
@@ -557,13 +560,13 @@
         }
 
         .ranking-percent {
-            font-size: 8px;
+            font-size: 10px;
             color: #888;
             margin-top: 1px;
         }
 
         .ranking-wins {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 900;
             color: #ffd700;
             text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
@@ -578,7 +581,9 @@
         }
 
         /* Stats Panel */
+        /* Stats Panel - Hidden from viewers */
         .stats-panel {
+            display: none;
             margin-top: 6px;
             padding-top: 6px;
             border-top: 2px solid rgba(0, 255, 255, 0.2);
@@ -599,13 +604,7 @@
         }
 
         .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-            margin-top: 5px;
-            border-radius: 10px;
-            font-size: 10px;
+            display: none;
             text-transform: uppercase;
             letter-spacing: 1px;
             background: rgba(0, 0, 0, 0.3);
@@ -651,7 +650,7 @@
         .leaderboard h2 {
             text-align: center;
             color: #00ffff;
-            font-size: 14px;
+            font-size: 22px;
             margin-bottom: 3px;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -660,9 +659,9 @@
 
         .leaderboard-subtitle {
             text-align: center;
-            color: #666;
-            font-size: 10px;
-            margin-bottom: 15px;
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
@@ -670,13 +669,16 @@
         .ranking-list {
             flex: 1;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
         }
 
         .ranking-item {
             display: flex;
             align-items: center;
-            padding: 5px 8px;
-            margin-bottom: 3px;
+            padding: 6px 8px;
+            margin-bottom: 0;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 10px;
             border: 1px solid rgba(0, 255, 255, 0.1);
@@ -688,15 +690,15 @@
         }
 
         .rank-badge {
-            width: 20px;
-            height: 20px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: bold;
             margin-right: 6px;
-            font-size: 10px;
+            font-size: 12px;
         }
 
         .rank-1 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
@@ -705,7 +707,7 @@
         .rank-other { background: rgba(0, 255, 255, 0.2); color: #00ffff; }
 
         .ranking-flag {
-            font-size: 16px;
+            font-size: 18px;
             margin-right: 6px;
         }
 
@@ -714,23 +716,24 @@
         }
 
         .ranking-name {
-            font-size: 10px;
+            font-size: 14px;
             font-weight: 600;
             color: #fff;
         }
 
         .ranking-percent {
-            font-size: 8px;
+            font-size: 10px;
             color: #888;
         }
 
         .ranking-wins {
-            font-size: 16px;
+            font-size: 22px;
             font-weight: bold;
             color: #ffd700;
         }
 
         .stats-panel {
+            display: none;
             margin-top: 6px;
             padding-top: 6px;
             border-top: 1px solid rgba(0, 255, 255, 0.2);
@@ -750,13 +753,7 @@
         }
 
         .connection-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            margin-top: 4px;
-            border-radius: 8px;
-            font-size: 9px;
+            display: none;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -1083,54 +1080,58 @@
         @media (max-width: 1000px) {
             .game-area { max-width: 60%; padding: 5px 8px; }
             .leaderboard { width: 40%; min-width: 0; max-width: none; padding: 5px 8px; }
-            .ranking-wins { font-size: 16px; }
-            .ranking-image { width: 24px; height: 24px; }
-            .game-title h1 { font-size: 16px; letter-spacing: 2px; }
-            .game-subtitle { font-size: 7px; }
-            .leaderboard h2 { font-size: 14px; }
+            .progress-container { height: 30px; }
+            .country-image { width: 30px; height: 30px; }
+            .ranking-wins { font-size: 20px; }
+            .ranking-image { width: 28px; height: 28px; }
+            .ranking-name { font-size: 12px; }
+            .game-title h1 { font-size: 20px; letter-spacing: 2px; }
+            .game-subtitle { font-size: 10px; }
+            .leaderboard h2 { font-size: 18px; }
+            .leaderboard-subtitle { font-size: 10px; }
+            .bar-country-name { font-size: 10px; }
+            .progress-text { font-size: 12px; }
         }
 
         @media (max-width: 700px) {
             .game-area { max-width: 58%; padding: 4px 6px; }
             .leaderboard { width: 42%; min-width: 0; padding: 4px 6px; }
-            .progress-container { height: 24px; }
-            .country-image { width: 24px; height: 24px; }
-            .bar-country-name { font-size: 7px; right: 20px; }
-            .bar-boost-emoji { font-size: 10px; right: 5px; }
-            .progress-text { font-size: 9px; left: 8px; }
-            .game-title h1 { font-size: 14px; }
-            .ranking-item { padding: 3px 5px; margin-bottom: 2px; }
-            .rank-badge { width: 18px; height: 18px; font-size: 8px; margin-right: 4px; }
-            .ranking-image { width: 20px; height: 20px; margin-right: 5px; }
-            .ranking-name { font-size: 9px; }
-            .ranking-percent { font-size: 7px; }
-            .ranking-wins { font-size: 14px; }
-            .leaderboard h2 { font-size: 12px; letter-spacing: 1px; }
-            .leaderboard-subtitle { font-size: 7px; }
+            .progress-container { height: 26px; }
+            .country-image { width: 26px; height: 26px; }
+            .bar-country-name { font-size: 8px; right: 22px; }
+            .bar-boost-emoji { font-size: 12px; right: 5px; }
+            .progress-text { font-size: 10px; left: 8px; }
+            .game-title h1 { font-size: 16px; }
+            .game-subtitle { font-size: 8px; }
+            .ranking-item { padding: 4px 6px; }
+            .rank-badge { width: 20px; height: 20px; font-size: 10px; margin-right: 4px; }
+            .ranking-image { width: 24px; height: 24px; margin-right: 5px; }
+            .ranking-name { font-size: 11px; }
+            .ranking-percent { font-size: 8px; }
+            .ranking-wins { font-size: 16px; }
+            .leaderboard h2 { font-size: 14px; letter-spacing: 1px; }
+            .leaderboard-subtitle { font-size: 8px; }
             .leaderboard-header { margin-bottom: 4px; padding-bottom: 4px; }
         }
 
         @media (max-width: 500px) {
             .game-area { max-width: 55%; padding: 3px 4px; }
             .leaderboard { width: 45%; min-width: 0; padding: 3px 4px; }
-            .progress-container { height: 20px; }
-            .country-image { width: 20px; height: 20px; border-width: 1px; }
-            .bar-country-name { font-size: 6px; right: 16px; }
-            .bar-boost-emoji { font-size: 8px; right: 3px; }
-            .progress-text { font-size: 8px; left: 5px; }
+            .progress-container { height: 22px; }
+            .country-image { width: 22px; height: 22px; border-width: 1px; }
+            .bar-country-name { font-size: 7px; right: 18px; }
+            .bar-boost-emoji { font-size: 10px; right: 3px; }
+            .progress-text { font-size: 9px; left: 5px; }
             .cards-grid { gap: 1px; padding: 1px 3px; }
-            .game-title h1 { font-size: 11px; letter-spacing: 1px; }
-            .game-subtitle { font-size: 6px; }
-            .ranking-item { padding: 2px 4px; margin-bottom: 1px; border-radius: 6px; }
-            .rank-badge { width: 14px; height: 14px; font-size: 7px; margin-right: 3px; }
-            .ranking-image { width: 16px; height: 16px; margin-right: 3px; border-width: 1px; }
-            .ranking-name { font-size: 8px; }
-            .ranking-wins { font-size: 12px; }
-            .leaderboard h2 { font-size: 10px; }
-            .stats-panel { margin-top: 2px; padding-top: 2px; }
-            .stat-item { font-size: 8px; padding: 1px 0; }
-            .connection-status { padding: 2px; font-size: 7px; margin-top: 2px; }
-            .status-dot { width: 5px; height: 5px; margin-right: 4px; }
+            .game-title h1 { font-size: 13px; letter-spacing: 1px; }
+            .game-subtitle { font-size: 7px; }
+            .ranking-item { padding: 3px 4px; border-radius: 6px; }
+            .rank-badge { width: 16px; height: 16px; font-size: 8px; margin-right: 3px; }
+            .ranking-image { width: 18px; height: 18px; margin-right: 3px; border-width: 1px; }
+            .ranking-name { font-size: 9px; }
+            .ranking-wins { font-size: 14px; }
+            .leaderboard h2 { font-size: 11px; }
+            .leaderboard-subtitle { font-size: 7px; }
         }
 
         /* Hide control panel on small heights */
@@ -1239,7 +1240,7 @@
         <div class="game-area">
             <div class="game-title">
                 <h1>⚔️ BATALLA LATINA ⚔️</h1>
-                <div class="game-subtitle">Comenta el nombre de tu país • Envía regalos • ¡500 para ganar!</div>
+                <div class="game-subtitle">Comenta el nombre de tu país • ¡500 para ganar!</div>
             </div>
 
             <!-- 3x3 Grid of Country Cards -->
@@ -1898,7 +1899,7 @@
                         </div>
                         <span class="progress-text" id="text-${id}">0%</span>
                         <span class="bar-country-name">${country.name}</span>
-                        <span class="bar-boost-emoji">${country.boostEmoji}</span>
+                        <span class="bar-boost-emoji">${country.smallEmoji}</span>
                     </div>
                 `;
 
