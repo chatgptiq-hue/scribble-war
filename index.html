@@ -1705,40 +1705,41 @@
 
                     const utterance = new SpeechSynthesisUtterance(chant);
                     
-                    // Use English for Trump, Spanish for others
+                    // Find the right voice FIRST
+                    const currentVoices = window.speechSynthesis.getVoices();
+                    let voice;
+                    
                     if (countryId === 'trump') {
                         utterance.lang = 'en-US';
                         utterance.rate = 0.9;
                         utterance.pitch = 0.8;
+                        voice = currentVoices.find(v => v.lang === 'en-US') || 
+                                currentVoices.find(v => v.lang.startsWith('en'));
                     } else {
                         utterance.lang = 'es-MX';
                         utterance.rate = 1.0;
                         utterance.pitch = 1.1;
-                    }
-                    utterance.volume = 1.0;
-
-                    // Find best voice - prioritize Mexican Spanish
-                    const currentVoices = window.speechSynthesis.getVoices();
-                    let voice;
-                    if (countryId === 'trump') {
-                        voice = currentVoices.find(v => v.lang === 'en-US') || 
-                                currentVoices.find(v => v.lang.startsWith('en'));
-                    } else {
                         voice = currentVoices.find(v => v.lang === 'es-MX') ||
                                 currentVoices.find(v => v.lang === 'es-419') ||
                                 currentVoices.find(v => v.lang === 'es-US') ||
                                 currentVoices.find(v => v.lang === 'es-ES') || 
                                 currentVoices.find(v => v.lang.startsWith('es'));
+                        
+                        // If no Spanish voice found, DON'T speak in English - just skip
+                        if (!voice) {
+                            console.log('⚠️ No Spanish voice available - skipping speech');
+                            return;
+                        }
                     }
                     
+                    utterance.volume = 1.0;
                     if (voice) {
                         utterance.voice = voice;
-                        console.log('Using voice:', voice.name);
+                        console.log('Using voice:', voice.name, voice.lang);
                     }
 
                     utterance.onerror = (e) => {
                         console.log('Speech error:', e.error);
-                        playCheerTone(countryId);
                     };
 
                     window.speechSynthesis.speak(utterance);
@@ -1746,10 +1747,7 @@
 
                 } catch (e) {
                     console.log('Speech failed:', e);
-                    playCheerTone(countryId);
                 }
-            } else {
-                playCheerTone(countryId);
             }
         }
 
