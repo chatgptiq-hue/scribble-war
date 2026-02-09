@@ -1282,7 +1282,7 @@
         <img class="victory-image" id="victory-image" src="" alt="Winner">
         <div class="victory-title">🎉 ¡GANADOR! 🎉</div>
         <div class="victory-country" id="victory-country">Country</div>
-        <div class="victory-contributor" id="victory-contributor">MVP: User</div>
+        <div class="victory-contributor" id="victory-contributor">Mejor jugador: User</div>
         <div class="victory-timer" id="victory-timer">Nueva ronda en 10s</div>
     </div>
 
@@ -1679,24 +1679,26 @@
                     if (countryId === 'trump') {
                         utterance.lang = 'en-US';
                         utterance.rate = 0.9;
-                        utterance.pitch = 0.8; // Lower pitch for Trump impression
+                        utterance.pitch = 0.8;
                     } else {
-                        utterance.lang = 'es-ES';
+                        utterance.lang = 'es-MX';
                         utterance.rate = 1.0;
                         utterance.pitch = 1.1;
                     }
                     utterance.volume = 1.0;
 
-                    // Find best voice
+                    // Find best voice - prioritize Mexican Spanish
                     const currentVoices = window.speechSynthesis.getVoices();
                     let voice;
                     if (countryId === 'trump') {
-                        voice = currentVoices.find(v => v.lang.startsWith('en-US')) || 
+                        voice = currentVoices.find(v => v.lang === 'en-US') || 
                                 currentVoices.find(v => v.lang.startsWith('en'));
                     } else {
-                        voice = currentVoices.find(v => 
-                            v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')
-                        );
+                        voice = currentVoices.find(v => v.lang === 'es-MX') ||
+                                currentVoices.find(v => v.lang === 'es-419') ||
+                                currentVoices.find(v => v.lang === 'es-US') ||
+                                currentVoices.find(v => v.lang === 'es-ES') || 
+                                currentVoices.find(v => v.lang.startsWith('es'));
                     }
                     
                     if (voice) {
@@ -2013,8 +2015,8 @@
             // Add the moves
             addMoves(countryId, CONFIG.boostMoves, username);
             
-            showGiftNotification(country.boostEmoji, '🚀 MEGA BOOST +125!', 'mega');
-            addFeedItem(username, '¡MEGA BOOST!', countryId, country.boostEmoji, 'mega');
+            showGiftNotification(country.boostEmoji, '🚀 ¡MEGA IMPULSO +125!', 'mega');
+            addFeedItem(username, '¡MEGA IMPULSO!', countryId, country.boostEmoji, 'mega');
         }
 
         // Core function to add moves and update bar
@@ -2159,7 +2161,7 @@
 
             document.getElementById('victory-image').src = country.image;
             document.getElementById('victory-country').textContent = country.name;
-            document.getElementById('victory-contributor').textContent = `MVP: ${topContributor}`;
+            document.getElementById('victory-contributor').textContent = `Mejor jugador: ${topContributor}`;
             document.getElementById('victory-overlay').classList.add('active');
 
             startFireworks();
@@ -2321,11 +2323,11 @@
                     <img class="ranking-image" src="${c.image}" alt="${c.name}" onerror="this.src='https://flagcdn.com/w80/un.png'">
                     <div class="ranking-info">
                         <div class="ranking-name">${c.name}</div>
-                        <div class="ranking-percent">${c.moves}/${CONFIG.maxMoves} moves</div>
+                        <div class="ranking-percent">${c.moves}/${CONFIG.maxMoves} movimientos</div>
                     </div>
                     <div style="text-align: center;">
                         <div class="ranking-wins">${c.wins}</div>
-                        <div class="ranking-wins-label">wins</div>
+                        <div class="ranking-wins-label">victorias</div>
                     </div>
                 </div>
             `).join('');
@@ -2433,7 +2435,7 @@
                     targetCountry = countryIds[Math.floor(Math.random() * countryIds.length)];
                 }
                 addMoves(targetCountry, CONFIG.commentMoves, username);
-                addFeedItem(username, '❤️ like', targetCountry, '❤️', 'comment');
+                addFeedItem(username, '❤️ le dio like', targetCountry, '❤️', 'comment');
             }
         }
 
