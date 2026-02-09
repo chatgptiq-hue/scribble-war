@@ -2510,6 +2510,336 @@
             }
         });
 
+        // ==================== BATTLE MUSIC SYSTEM ====================
+        const BattleMusic = {
+            ctx: null,
+            playing: false,
+            currentTrack: 0,
+            masterGain: null,
+            nodes: [],
+            bpm: 140,
+            
+            // 3 different battle tracks
+            tracks: [
+                { // Track 1: Aggressive EDM Battle
+                    bpm: 140,
+                    bassPattern: [0, 0, 7, 5, 0, 0, 3, 7, 0, 0, 7, 5, 3, 5, 7, 3],
+                    leadPattern: [12, 15, 19, 17, 15, 12, 14, 15, 12, 15, 19, 22, 19, 17, 15, 14],
+                    leadOctave: 1,
+                    bassOctave: -1,
+                    padChords: [[0,4,7], [5,9,12], [3,7,10], [7,11,14]],
+                    drumPattern: [1,0,0,1, 1,0,1,0, 1,0,0,1, 1,0,1,1],
+                    hihatPattern:[1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+                    key: 36, // C2 MIDI
+                    filterFreq: 800,
+                    vibe: 'aggressive'
+                },
+                { // Track 2: Epic Cinematic Battle
+                    bpm: 128,
+                    bassPattern: [0, 0, 0, 5, 7, 7, 5, 3, 0, 0, 0, 5, 3, 3, 5, 7],
+                    leadPattern: [24, 22, 19, 17, 19, 22, 24, 26, 24, 22, 19, 15, 17, 19, 22, 24],
+                    leadOctave: 1,
+                    bassOctave: -1,
+                    padChords: [[0,3,7], [5,8,12], [7,10,14], [3,7,10]],
+                    drumPattern: [1,0,0,0, 1,0,0,1, 1,0,0,0, 1,0,1,0],
+                    hihatPattern:[0,1,1,1, 0,1,1,1, 0,1,1,1, 1,1,1,1],
+                    key: 33, // A1 MIDI
+                    filterFreq: 600,
+                    vibe: 'epic'
+                },
+                { // Track 3: Fast Hype Battle
+                    bpm: 155,
+                    bassPattern: [0, 3, 5, 7, 0, 3, 7, 5, 0, 5, 7, 10, 7, 5, 3, 0],
+                    leadPattern: [12, 14, 15, 19, 17, 15, 14, 12, 15, 17, 19, 22, 19, 17, 15, 12],
+                    leadOctave: 2,
+                    bassOctave: -1,
+                    padChords: [[0,4,7], [3,7,10], [5,9,12], [0,4,7]],
+                    drumPattern: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,1,1,0],
+                    hihatPattern:[1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+                    key: 38, // D2 MIDI
+                    filterFreq: 1000,
+                    vibe: 'hype'
+                }
+            ],
+            
+            midiToFreq(midi) {
+                return 440 * Math.pow(2, (midi - 69) / 12);
+            },
+            
+            init() {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0.3;
+                
+                // Master compressor for loudness
+                const compressor = this.ctx.createDynamicsCompressor();
+                compressor.threshold.value = -20;
+                compressor.knee.value = 10;
+                compressor.ratio.value = 8;
+                compressor.attack.value = 0.005;
+                compressor.release.value = 0.1;
+                
+                this.masterGain.connect(compressor);
+                compressor.connect(this.ctx.destination);
+            },
+            
+            createKick(time) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, time);
+                osc.frequency.exponentialRampToValueAtTime(30, time + 0.15);
+                gain.gain.setValueAtTime(0.8, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                osc.start(time);
+                osc.stop(time + 0.2);
+            },
+            
+            createHihat(time) {
+                const bufferSize = this.ctx.sampleRate * 0.05;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+                }
+                const source = this.ctx.createBufferSource();
+                source.buffer = buffer;
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.15, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 7000;
+                source.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+                source.start(time);
+            },
+            
+            createSnare(time) {
+                // Noise part
+                const bufferSize = this.ctx.sampleRate * 0.1;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                }
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                const noiseGain = this.ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.4, time);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+                const noiseFilter = this.ctx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.value = 3000;
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(this.masterGain);
+                noise.start(time);
+                
+                // Tone part
+                const osc = this.ctx.createOscillator();
+                const oscGain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(200, time);
+                osc.frequency.exponentialRampToValueAtTime(80, time + 0.05);
+                oscGain.gain.setValueAtTime(0.3, time);
+                oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+                osc.connect(oscGain);
+                oscGain.connect(this.masterGain);
+                osc.start(time);
+                osc.stop(time + 0.1);
+            },
+            
+            playTrack(trackIdx) {
+                if (!this.ctx) this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                
+                this.stopAll();
+                const track = this.tracks[trackIdx];
+                this.bpm = track.bpm;
+                const stepTime = 60 / track.bpm / 4; // 16th notes
+                const barLength = 16 * stepTime;
+                const loopLength = 4 * barLength; // 4 bars per loop
+                
+                const now = this.ctx.currentTime + 0.1;
+                
+                // Schedule 8 loops ahead (then re-schedule)
+                const totalBars = 32;
+                
+                for (let bar = 0; bar < totalBars; bar++) {
+                    const barStart = now + (bar * barLength);
+                    const chordIdx = bar % 4;
+                    
+                    // Bass
+                    for (let step = 0; step < 16; step++) {
+                        const time = barStart + step * stepTime;
+                        const note = track.bassPattern[step];
+                        if (note !== null) {
+                            const freq = this.midiToFreq(track.key + note + (12 * track.bassOctave));
+                            this.playBass(freq, time, stepTime * 0.8);
+                        }
+                        
+                        // Drums
+                        if (track.drumPattern[step]) {
+                            if (step % 8 === 4) {
+                                this.createSnare(time);
+                            } else {
+                                this.createKick(time);
+                            }
+                        }
+                        if (track.hihatPattern[step]) {
+                            this.createHihat(time);
+                        }
+                    }
+                    
+                    // Lead melody
+                    for (let step = 0; step < 16; step++) {
+                        const time = barStart + step * stepTime;
+                        const note = track.leadPattern[step];
+                        if (note !== null && step % 2 === 0) {
+                            const freq = this.midiToFreq(track.key + note + (12 * track.leadOctave));
+                            this.playLead(freq, time, stepTime * 1.8, track.filterFreq);
+                        }
+                    }
+                    
+                    // Pad chords
+                    const chord = track.padChords[chordIdx];
+                    chord.forEach(note => {
+                        const freq = this.midiToFreq(track.key + note + 24);
+                        this.playPad(freq, barStart, barLength * 0.95);
+                    });
+                }
+                
+                // Schedule next track when this one ends
+                const totalTime = totalBars * barLength;
+                this.nextTrackTimeout = setTimeout(() => {
+                    if (this.playing) {
+                        this.currentTrack = (this.currentTrack + 1) % this.tracks.length;
+                        this.playTrack(this.currentTrack);
+                    }
+                }, totalTime * 1000);
+                
+                this.playing = true;
+            },
+            
+            playBass(freq, time, duration) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, time);
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(400, time);
+                filter.Q.value = 5;
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.35, time + 0.01);
+                gain.gain.setValueAtTime(0.35, time + duration * 0.7);
+                gain.gain.linearRampToValueAtTime(0, time + duration);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+                osc.start(time);
+                osc.stop(time + duration + 0.01);
+            },
+            
+            playLead(freq, time, duration, filterFreq) {
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                osc1.type = 'square';
+                osc2.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(freq, time);
+                osc2.frequency.setValueAtTime(freq * 1.005, time); // slight detune
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(filterFreq, time);
+                filter.frequency.linearRampToValueAtTime(filterFreq * 3, time + 0.05);
+                filter.frequency.exponentialRampToValueAtTime(filterFreq, time + duration);
+                filter.Q.value = 3;
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.12, time + 0.02);
+                gain.gain.setValueAtTime(0.1, time + duration * 0.6);
+                gain.gain.linearRampToValueAtTime(0, time + duration);
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+                osc1.start(time);
+                osc2.start(time);
+                osc1.stop(time + duration + 0.01);
+                osc2.stop(time + duration + 0.01);
+            },
+            
+            playPad(freq, time, duration) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, time);
+                filter.type = 'lowpass';
+                filter.frequency.value = 1200;
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.06, time + duration * 0.3);
+                gain.gain.setValueAtTime(0.06, time + duration * 0.7);
+                gain.gain.linearRampToValueAtTime(0, time + duration);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.masterGain);
+                osc.start(time);
+                osc.stop(time + duration + 0.05);
+            },
+            
+            stopAll() {
+                if (this.nextTrackTimeout) clearTimeout(this.nextTrackTimeout);
+                // Create fresh gain to kill all sound
+                if (this.ctx && this.masterGain) {
+                    this.masterGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+                    setTimeout(() => {
+                        if (this.masterGain) this.masterGain.gain.value = 0.3;
+                    }, 150);
+                }
+            },
+            
+            start() {
+                if (!this.ctx) this.init();
+                this.currentTrack = 0;
+                this.playTrack(0);
+            },
+            
+            stop() {
+                this.playing = false;
+                this.stopAll();
+            },
+            
+            toggle() {
+                if (this.playing) {
+                    this.stop();
+                } else {
+                    this.start();
+                }
+                return this.playing;
+            }
+        };
+        
+        // Auto-start music on first user interaction (browser requires gesture)
+        let musicStarted = false;
+        document.addEventListener('click', () => {
+            if (!musicStarted) {
+                musicStarted = true;
+                BattleMusic.start();
+            }
+        }, { once: true });
+        
+        // M key to toggle music
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'm' || e.key === 'M') {
+                BattleMusic.toggle();
+            }
+        });
+
         // ==================== INIT ====================
         function init() {
             createCountryCards();
