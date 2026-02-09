@@ -283,6 +283,36 @@
         .progress-fill.boosting {
             animation: megaBoostExtreme 1s cubic-bezier(0.36, 0.07, 0.19, 0.97);
         }
+        
+        /* Screen shake for mega boost */
+        .screen-shake {
+            animation: screenShake 0.6s ease-in-out;
+        }
+        
+        @keyframes screenShake {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-8px, -4px); }
+            20% { transform: translate(8px, 4px); }
+            30% { transform: translate(-6px, 6px); }
+            40% { transform: translate(6px, -6px); }
+            50% { transform: translate(-4px, 4px); }
+            60% { transform: translate(4px, -4px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        /* Epic pulse on gift */
+        .country-card.gift-pulse {
+            animation: giftPulse 0.5s ease;
+        }
+        
+        @keyframes giftPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.1); box-shadow: 0 0 30px var(--country-glow, cyan); }
+            60% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
 
         @keyframes megaBoostExtreme {
             0% { 
@@ -1723,51 +1753,9 @@
             }
         }
 
-        // Fallback: Play musical tones for the country
+        // Fallback: No sound (removed annoying ping)
         function playCheerTone(countryId) {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Different melody patterns for each country
-                const melodies = {
-                    colombia: [392, 440, 494, 523, 494, 440],
-                    venezuela: [349, 392, 440, 494, 440, 392],
-                    ecuador: [440, 494, 523, 587, 523, 494],
-                    mexico: [523, 587, 659, 587, 523, 494],
-                    elsalvador: [392, 440, 523, 440, 392, 349],
-                    nicaragua: [440, 523, 440, 523, 587, 494],
-                    guatemala: [349, 440, 523, 440, 349, 392],
-                    peru: [494, 523, 587, 659, 587, 523],
-                    puertorico: [523, 587, 659, 698, 659, 587],
-                    dominicana: [392, 494, 587, 494, 392, 440],
-                    chile: [523, 523, 587, 587, 659, 523],
-                    trump: [659, 659, 587, 523, 587, 659, 698, 659] // More dramatic for Trump
-                };
-
-                const notes = melodies[countryId] || melodies.mexico;
-                const duration = 0.15;
-
-                notes.forEach((freq, i) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    
-                    osc.type = 'sine';
-                    osc.frequency.value = freq;
-                    
-                    const startTime = audioCtx.currentTime + (i * duration);
-                    gain.gain.setValueAtTime(0.3, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-                    
-                    osc.start(startTime);
-                    osc.stop(startTime + duration);
-                });
-
-            } catch (e) {
-                console.log('Audio fallback failed:', e);
-            }
+            // Intentionally silent - speech synthesis handles audio
         }
 
         function showCheerNotification(flag, text) {
@@ -1969,6 +1957,13 @@
             
             addMoves(countryId, CONFIG.commentMoves, username);
             addFeedItem(username, 'comentó', countryId, '💬', 'comment');
+            
+            // Quick pulse on the bar
+            const card = document.getElementById(`card-${countryId}`);
+            if (card) {
+                card.style.transform = 'scale(1.03)';
+                setTimeout(() => card.style.transform = '', 200);
+            }
         }
 
         // Small gift trigger (+2 moves)
@@ -1978,7 +1973,21 @@
             const country = countries[countryId];
             addMoves(countryId, CONFIG.smallGiftMoves, username);
             
-            showGiftNotification(country.smallEmoji, '+2', 'boost');
+            // Play epic impact sound
+            playGiftImpact();
+            
+            // Shake the bar
+            const card = document.getElementById(`card-${countryId}`);
+            if (card) {
+                card.classList.add('mega-boost');
+                card.style.transform = 'scale(1.08)';
+                setTimeout(() => {
+                    card.classList.remove('mega-boost');
+                    card.style.transform = '';
+                }, 500);
+            }
+            
+            showGiftNotification(country.giftImage ? `<img src="${country.giftImage}" style="width:50px;height:50px;object-fit:contain;">` : country.smallEmoji, '+2', 'boost');
             addFeedItem(username, 'regaló', countryId, country.smallEmoji, 'gift');
         }
 
@@ -1992,6 +2001,13 @@
             const card = document.getElementById(`card-${countryId}`);
             const fillEl = document.getElementById(`fill-${countryId}`);
             const flashEl = document.getElementById('mega-flash');
+            const container = document.querySelector('.container');
+            
+            // Screen shake the whole page!
+            if (container) {
+                container.classList.add('screen-shake');
+                setTimeout(() => container.classList.remove('screen-shake'), 600);
+            }
             
             // Screen flash
             if (flashEl) {
@@ -2032,51 +2048,110 @@
 
             gameState.totalActions += moveCount;
             
-            // Trigger green glow
+            // Trigger glow effect based on move size
             const fillEl = document.getElementById(`fill-${countryId}`);
+            const card = document.getElementById(`card-${countryId}`);
+            
             if (fillEl && !fillEl.classList.contains('boosting')) {
                 fillEl.classList.add('moving');
-                setTimeout(() => fillEl.classList.remove('moving'), 400);
+                setTimeout(() => fillEl.classList.remove('moving'), 600);
+            }
+            
+            // Flash the entire bar border on any move
+            if (card) {
+                card.style.boxShadow = `0 0 20px ${country.glow}, 0 0 40px ${country.glow}`;
+                setTimeout(() => card.style.boxShadow = '', 400);
             }
             
             updateProgressBar(countryId);
             updateUI();
             checkLeaderAndCheer();
+            
+            // Auto-start music on first real event
+            tryStartMusic();
         }
 
         function playBoostSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.4;
+                masterGain.connect(audioCtx.destination);
                 
-                // Epic rising power-up sound
-                const notes = [300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 1800];
+                // Epic rising whoosh
+                const notes = [200, 300, 400, 550, 700, 900, 1100, 1400, 1700, 2000];
                 notes.forEach((freq, i) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.type = i < 5 ? 'sine' : 'triangle';
+                    gain.connect(masterGain);
+                    osc.type = i < 5 ? 'sawtooth' : 'square';
                     osc.frequency.value = freq;
-                    const startTime = audioCtx.currentTime + (i * 0.06);
-                    gain.gain.setValueAtTime(0.25, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.12);
+                    const startTime = audioCtx.currentTime + (i * 0.04);
+                    gain.gain.setValueAtTime(0.15, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.08);
                     osc.start(startTime);
-                    osc.stop(startTime + 0.12);
+                    osc.stop(startTime + 0.08);
                 });
                 
-                // Add a final "boom" bass hit
+                // Deep bass impact at the end
                 setTimeout(() => {
                     const bass = audioCtx.createOscillator();
                     const bassGain = audioCtx.createGain();
                     bass.connect(bassGain);
-                    bassGain.connect(audioCtx.destination);
+                    bassGain.connect(masterGain);
                     bass.type = 'sine';
-                    bass.frequency.value = 80;
-                    bassGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    bassGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    bass.frequency.setValueAtTime(60, audioCtx.currentTime);
+                    bass.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.4);
+                    bassGain.gain.setValueAtTime(0.6, audioCtx.currentTime);
+                    bassGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
                     bass.start();
-                    bass.stop(audioCtx.currentTime + 0.3);
-                }, 500);
+                    bass.stop(audioCtx.currentTime + 0.4);
+                    
+                    // Sparkle high notes
+                    [2000, 2400, 3000].forEach((f, j) => {
+                        const sp = audioCtx.createOscillator();
+                        const spG = audioCtx.createGain();
+                        sp.connect(spG); spG.connect(masterGain);
+                        sp.type = 'sine';
+                        sp.frequency.value = f;
+                        const t = audioCtx.currentTime + j * 0.08;
+                        spG.gain.setValueAtTime(0.1, t);
+                        spG.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+                        sp.start(t); sp.stop(t + 0.15);
+                    });
+                }, 350);
+            } catch (e) {}
+        }
+        
+        // Epic impact sound for small gifts
+        function playGiftImpact() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const gain = audioCtx.createGain();
+                gain.connect(audioCtx.destination);
+                
+                // Quick punch sound
+                const osc = audioCtx.createOscillator();
+                osc.connect(gain);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+                
+                // Bright ding
+                const ding = audioCtx.createOscillator();
+                const dingGain = audioCtx.createGain();
+                ding.connect(dingGain); dingGain.connect(audioCtx.destination);
+                ding.type = 'sine';
+                ding.frequency.value = 1200;
+                dingGain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                dingGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+                ding.start();
+                ding.stop(audioCtx.currentTime + 0.2);
             } catch (e) {}
         }
 
@@ -2102,19 +2177,38 @@
         
         // Find country from comment text (name or abbreviation)
         function findCountryFromComment(comment) {
-            const text = comment.toLowerCase().trim();
+            // Normalize: lowercase, remove accents, trim
+            const text = comment.toLowerCase().trim()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // strip accents
             
-            for (const [countryId, country] of Object.entries(countries)) {
-                // Check full name
-                if (text.includes(country.name.toLowerCase())) {
-                    return countryId;
-                }
-                // Check abbreviations
-                for (const abbr of country.abbr) {
-                    // Match whole word or with common patterns
-                    const regex = new RegExp(`\\b${abbr}\\b|^${abbr}$|#${abbr}\\b`, 'i');
-                    if (regex.test(text)) {
-                        return countryId;
+            // Direct keyword matching - much more flexible
+            const keywordMap = {
+                colombia: ['colombia', 'col', 'colombi'],
+                venezuela: ['venezuela', 'ven', 'vene', 'vzla', 'venez'],
+                ecuador: ['ecuador', 'ecu', 'ecua'],
+                mexico: ['mexico', 'mex', 'mexi', 'mexic'],
+                elsalvador: ['el salvador', 'salvador', 'salva', 'sv', 'elsalvador'],
+                nicaragua: ['nicaragua', 'nic', 'nicara', 'nica'],
+                guatemala: ['guatemala', 'gua', 'guate', 'chapines', 'chapin'],
+                peru: ['peru', 'per', 'peruano'],
+                puertorico: ['puerto rico', 'puertorico', 'pr', 'boricua', 'borinquen'],
+                dominicana: ['dominicana', 'dominican', 'dom', 'rd', 'quisqueya', 'republica dominicana', 'rep dominicana', 'rep. dominicana'],
+                chile: ['chile', 'chi', 'chileno', 'chilena'],
+                trump: ['usa', 'us', 'united states', 'trump', 'estados unidos', 'eeuu', 'america', 'gringo']
+            };
+            
+            for (const [countryId, keywords] of Object.entries(keywordMap)) {
+                for (const kw of keywords) {
+                    // Check if the keyword appears anywhere in the text
+                    if (text.includes(kw)) {
+                        // For very short keywords (2 chars), require exact match or start/end
+                        if (kw.length <= 2) {
+                            if (text === kw || text.startsWith(kw + ' ') || text.endsWith(' ' + kw) || text.includes(' ' + kw + ' ') || text.includes('#' + kw)) {
+                                return countryId;
+                            }
+                        } else {
+                            return countryId;
+                        }
                     }
                 }
             }
@@ -2123,18 +2217,21 @@
 
         // Find country and gift type from gift name/id
         function findCountryForGift(giftName, giftId) {
-            const terms = [giftName?.toLowerCase() || '', giftId?.toString() || ''];
+            const name = (giftName || '').toLowerCase().trim();
+            const id = (giftId || '').toString().trim();
 
             for (const [countryId, country] of Object.entries(countries)) {
                 // Check small gifts (1-coin = 2 moves)
-                for (const term of terms) {
-                    if (term && country.smallGifts.some(g => term.includes(g) || g.includes(term))) {
+                for (const g of country.smallGifts) {
+                    if ((name && (name.includes(g) || g.includes(name))) ||
+                        (id && id === g)) {
                         return { countryId, type: 'small' };
                     }
                 }
                 // Check boost gifts (100-coin = 125 moves)
-                for (const term of terms) {
-                    if (term && country.boostGifts.some(g => term.includes(g) || g.includes(term))) {
+                for (const g of country.boostGifts) {
+                    if ((name && (name.includes(g) || g.includes(name))) ||
+                        (id && id === g)) {
                         return { countryId, type: 'boost' };
                     }
                 }
@@ -2397,24 +2494,37 @@
         function processMessage(data) {
             const username = data.uniqueId || data.nickname || 'Anonymous';
             
+            console.log('📨 Received:', JSON.stringify(data).substring(0, 200));
+            
             // Handle comments - check for country name/abbreviation
             if (data.type === 'chat' || data.comment) {
                 const comment = data.comment || data.text || '';
+                console.log(`💬 Comment from ${username}: "${comment}"`);
                 const countryId = findCountryFromComment(comment);
                 if (countryId) {
+                    console.log(`✅ Matched country: ${countryId}`);
                     handleComment(countryId, username);
+                } else {
+                    console.log(`❌ No country match for: "${comment}"`);
                 }
             }
             
             // Handle gifts
             if (data.type === 'gift' || data.giftName || data.giftId) {
-                const match = findCountryForGift(data.giftName || data.gift, data.giftId || data.gift_id);
+                const giftName = data.giftName || data.gift || data.extendedGiftInfo?.name || '';
+                const giftId = data.giftId || data.gift_id || '';
+                console.log(`🎁 Gift from ${username}: "${giftName}" (ID: ${giftId})`);
+                
+                const match = findCountryForGift(giftName, giftId);
                 if (match) {
+                    console.log(`✅ Gift matched: ${match.countryId} (${match.type})`);
                     if (match.type === 'small') {
-                        handleSmallGift(match.countryId, username, data.giftName);
+                        handleSmallGift(match.countryId, username, giftName);
                     } else if (match.type === 'boost') {
-                        handleMegaBoost(match.countryId, username, data.giftName);
+                        handleMegaBoost(match.countryId, username, giftName);
                     }
+                } else {
+                    console.log(`❌ No gift match for: "${giftName}" (ID: ${giftId})`);
                 }
             }
 
@@ -2422,15 +2532,13 @@
             if (data.type === 'like') {
                 const countryIds = Object.keys(countries);
                 let targetCountry;
-                // Find current leader
                 let maxMoves = 0;
                 countryIds.forEach(id => {
-                    if (gameState.moves[id] > maxMoves) {
-                        maxMoves = gameState.moves[id];
+                    if (countries[id].moves > maxMoves) {
+                        maxMoves = countries[id].moves;
                         targetCountry = id;
                     }
                 });
-                // If no leader, pick random
                 if (!targetCountry || maxMoves === 0) {
                     targetCountry = countryIds[Math.floor(Math.random() * countryIds.length)];
                 }
@@ -2828,17 +2936,29 @@
         
         // Auto-start music on first user interaction (browser requires gesture)
         let musicStarted = false;
-        document.addEventListener('click', () => {
+        function tryStartMusic() {
             if (!musicStarted) {
                 musicStarted = true;
                 BattleMusic.start();
+                console.log('🎵 Battle music started!');
             }
-        }, { once: true });
+        }
+        document.addEventListener('click', tryStartMusic, { once: false });
+        document.addEventListener('touchstart', tryStartMusic, { once: false });
+        document.addEventListener('keydown', tryStartMusic, { once: false });
+        
+        // Also try to auto-start after a short delay (some browsers allow it)
+        setTimeout(() => {
+            try {
+                tryStartMusic();
+            } catch(e) {}
+        }, 2000);
         
         // M key to toggle music
         document.addEventListener('keydown', (e) => {
             if (e.key === 'm' || e.key === 'M') {
-                BattleMusic.toggle();
+                const playing = BattleMusic.toggle();
+                console.log(playing ? '🎵 Music ON' : '🔇 Music OFF');
             }
         });
 
