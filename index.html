@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Scribble War - TikTok Live</title>
+    <title>Scribble War - Progress Battle</title>
     <style>
         * {
             margin: 0;
@@ -29,7 +28,53 @@
             height: 100%;
         }
 
-        /* ==================== LAYOUT ==================== */
+        .container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Main Game Area */
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .game-title {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .game-title h1 {
+            font-size: 32px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .game-subtitle {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 5px;
+        }
+
+        /* Main Layout - Split View */
         .container {
             display: flex;
             width: 100vw;
@@ -37,6 +82,7 @@
             gap: 0;
         }
 
+        /* Main Game Area - Left Side */
         .game-area {
             flex: 1;
             display: flex;
@@ -77,7 +123,7 @@
             margin-top: 3px;
         }
 
-        /* ==================== CARDS GRID ==================== */
+        /* Vertical Pill Layout */
         .cards-grid {
             display: flex;
             flex-direction: column;
@@ -88,6 +134,7 @@
             width: 100%;
         }
 
+        /* Country Card - Horizontal Row */
         .country-card {
             background: transparent;
             padding: 0;
@@ -99,14 +146,21 @@
             transition: transform 0.2s ease;
         }
 
-        .country-card:active { transform: scale(0.98); }
+        .country-card:active {
+            transform: scale(0.98);
+        }
 
         .country-card.selected .progress-container {
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
         }
 
-        .country-card.sabotaged { animation: sabotageShake 0.5s ease; }
-        .country-card.sabotaged .progress-container { animation: sabotageFlash 0.5s ease; }
+        .country-card.sabotaged {
+            animation: sabotageShake 0.5s ease;
+        }
+
+        .country-card.sabotaged .progress-container {
+            animation: sabotageFlash 0.5s ease;
+        }
 
         @keyframes sabotageShake {
             0%, 100% { transform: translateX(0); }
@@ -119,6 +173,7 @@
             50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.9), inset 0 0 20px rgba(255, 0, 0, 0.5); }
         }
 
+        /* Country Name Label - Above Bar */
         .country-label {
             display: flex;
             justify-content: space-between;
@@ -135,9 +190,12 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        .boost-emoji { font-size: 12px; opacity: 0.8; }
+        .boost-emoji {
+            font-size: 12px;
+            opacity: 0.8;
+        }
 
-        /* ==================== PROGRESS BAR ==================== */
+        /* Progress Bar - Pill Shape - Dark Background */
         .progress-container {
             width: 100%;
             height: 40px;
@@ -151,6 +209,7 @@
             box-shadow: var(--default-shadow), inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
+        /* Progress Fill - Neon Glow */
         .progress-fill {
             height: 100%;
             width: 0%;
@@ -159,7 +218,7 @@
             position: relative;
             transition: width 0.5s cubic-bezier(0.1, 0.7, 1.0, 0.1);
             background: linear-gradient(90deg, var(--country-color), var(--country-color-light, var(--country-color)));
-            box-shadow:
+            box-shadow: 
                 0 0 20px var(--country-glow),
                 0 0 40px var(--country-glow),
                 inset 0 2px 10px rgba(255, 255, 255, 0.3);
@@ -172,49 +231,159 @@
         .progress-fill::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 50%;
             background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%);
             border-radius: 50px 50px 0 0;
         }
 
-        .progress-fill.moving { animation: epicGreenPulse 0.6s ease; }
+        /* EPIC Green Glow when moving - Regular moves */
+        .progress-fill.moving {
+            animation: epicGreenPulse 0.6s ease;
+        }
 
         @keyframes epicGreenPulse {
-            0% { box-shadow: 0 0 20px var(--country-glow), 0 0 40px var(--country-glow), inset 0 2px 10px rgba(255,255,255,0.3); filter: brightness(1); }
-            25% { box-shadow: 0 0 40px #00ff00, 0 0 80px #00ff00, 0 0 120px rgba(0,255,0,0.8), inset 0 0 30px rgba(0,255,0,0.6); filter: brightness(1.4) saturate(1.5); transform: scaleY(1.15); }
-            50% { box-shadow: 0 0 50px #00ff88, 0 0 100px #00ff44, 0 0 150px rgba(0,255,100,0.9), inset 0 0 40px rgba(0,255,0,0.7); filter: brightness(1.6) saturate(1.8); transform: scaleY(1.2) scaleX(1.02); }
-            75% { box-shadow: 0 0 35px #00ff00, 0 0 70px rgba(0,255,0,0.7), inset 0 0 20px rgba(0,255,0,0.4); filter: brightness(1.3); transform: scaleY(1.1); }
-            100% { box-shadow: 0 0 20px var(--country-glow), 0 0 40px var(--country-glow), inset 0 2px 10px rgba(255,255,255,0.3); filter: brightness(1); transform: scaleY(1) scaleX(1); }
+            0% { 
+                box-shadow: 
+                    0 0 20px var(--country-glow),
+                    0 0 40px var(--country-glow),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.3);
+                filter: brightness(1);
+            }
+            25% { 
+                box-shadow: 
+                    0 0 40px #00ff00,
+                    0 0 80px #00ff00,
+                    0 0 120px rgba(0, 255, 0, 0.8),
+                    0 0 160px rgba(0, 255, 0, 0.5),
+                    inset 0 0 30px rgba(0, 255, 0, 0.6);
+                filter: brightness(1.4) saturate(1.5);
+                transform: scaleY(1.15);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 50px #00ff88,
+                    0 0 100px #00ff44,
+                    0 0 150px rgba(0, 255, 100, 0.9),
+                    0 0 200px rgba(0, 255, 0, 0.6),
+                    inset 0 0 40px rgba(0, 255, 0, 0.7);
+                filter: brightness(1.6) saturate(1.8);
+                transform: scaleY(1.2) scaleX(1.02);
+            }
+            75% {
+                box-shadow: 
+                    0 0 35px #00ff00,
+                    0 0 70px rgba(0, 255, 0, 0.7),
+                    inset 0 0 20px rgba(0, 255, 0, 0.4);
+                filter: brightness(1.3);
+                transform: scaleY(1.1);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 20px var(--country-glow),
+                    0 0 40px var(--country-glow),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.3);
+                filter: brightness(1);
+                transform: scaleY(1) scaleX(1);
+            }
         }
 
-        .progress-fill.boosting { animation: megaBoostExtreme 1s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+        /* MEGA BOOST - Extreme shake, glow, and 3D pop effect */
+        .progress-fill.boosting {
+            animation: megaBoostExtreme 1s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
 
         @keyframes megaBoostExtreme {
-            0% { transform: scale(1); box-shadow: 0 0 20px var(--country-glow); filter: brightness(1); }
-            5% { transform: scale(1.05) translateX(-8px); }
-            10% { transform: scale(1.1) translateX(8px); }
-            15% { transform: scale(1.08) translateX(-10px); }
-            20% { transform: scale(1.15) translateX(10px); }
-            25% { transform: scale(1.2) translateX(-6px); box-shadow: 0 0 60px #00ff00, 0 0 120px #00ff00, 0 0 180px rgba(0,255,0,1); filter: brightness(2) saturate(2); }
-            40% { transform: scale(1.3) translateX(8px); box-shadow: 0 0 80px #00ff44, 0 0 160px #00ff00, 0 0 240px rgba(0,255,100,1); filter: brightness(2.5) saturate(2.5); }
-            50% { transform: scale(1.35) translateY(-5px); box-shadow: 0 0 100px #ffffff, 0 0 200px #00ff00, 0 0 300px rgba(0,255,100,1); filter: brightness(3) saturate(3) contrast(1.2); }
-            70% { transform: scale(1.15) translateX(4px); }
+            0% { 
+                transform: scale(1) translateZ(0);
+                box-shadow: 0 0 20px var(--country-glow);
+                filter: brightness(1);
+            }
+            5% { transform: scale(1.05) translateX(-8px) translateY(-2px); }
+            10% { transform: scale(1.1) translateX(8px) translateY(2px); }
+            15% { transform: scale(1.08) translateX(-10px) translateY(-3px); }
+            20% { transform: scale(1.15) translateX(10px) translateY(3px); }
+            25% { 
+                transform: scale(1.2) translateX(-6px) translateY(-4px) perspective(500px) translateZ(50px);
+                box-shadow: 
+                    0 0 60px #00ff00,
+                    0 0 120px #00ff00,
+                    0 0 180px rgba(0, 255, 0, 1),
+                    0 0 250px rgba(0, 255, 0, 0.8),
+                    0 20px 60px rgba(0, 0, 0, 0.5);
+                filter: brightness(2) saturate(2);
+            }
+            30% { transform: scale(1.25) translateX(6px) translateY(4px) perspective(500px) translateZ(80px); }
+            35% { transform: scale(1.22) translateX(-8px) translateY(-2px) perspective(500px) translateZ(100px); }
+            40% { 
+                transform: scale(1.3) translateX(8px) perspective(500px) translateZ(120px);
+                box-shadow: 
+                    0 0 80px #00ff44,
+                    0 0 160px #00ff00,
+                    0 0 240px rgba(0, 255, 100, 1),
+                    0 0 320px rgba(0, 255, 0, 0.9),
+                    0 30px 80px rgba(0, 0, 0, 0.6);
+                filter: brightness(2.5) saturate(2.5);
+            }
+            50% { 
+                transform: scale(1.35) translateY(-5px) perspective(500px) translateZ(150px);
+                box-shadow: 
+                    0 0 100px #ffffff,
+                    0 0 200px #00ff00,
+                    0 0 300px rgba(0, 255, 100, 1),
+                    0 0 400px rgba(0, 255, 0, 0.8),
+                    0 40px 100px rgba(0, 0, 0, 0.7);
+                filter: brightness(3) saturate(3) contrast(1.2);
+            }
+            60% { transform: scale(1.25) translateX(-4px) perspective(500px) translateZ(100px); }
+            70% { transform: scale(1.15) translateX(4px) perspective(500px) translateZ(60px); }
+            80% { transform: scale(1.08) translateX(-2px) perspective(500px) translateZ(30px); }
             90% { transform: scale(1.03) translateX(2px); }
-            100% { transform: scale(1); box-shadow: 0 0 20px var(--country-glow); filter: brightness(1); }
+            100% { 
+                transform: scale(1) translateZ(0);
+                box-shadow: 0 0 20px var(--country-glow);
+                filter: brightness(1);
+            }
         }
 
-        .country-card.mega-boost { z-index: 100; }
-        .country-card.mega-boost .progress-container { animation: containerMegaBoost 1s ease; }
+        /* Card mega-boost effect - whole card pops */
+        .country-card.mega-boost {
+            z-index: 100;
+        }
+
+        .country-card.mega-boost .progress-container {
+            animation: containerMegaBoost 1s ease;
+        }
 
         @keyframes containerMegaBoost {
-            0%, 100% { box-shadow: var(--default-shadow); transform: scale(1); }
-            30% { box-shadow: 0 0 50px #00ff00, 0 0 100px rgba(0,255,0,0.7); transform: scale(1.05) translateY(-5px); }
-            50% { box-shadow: 0 0 80px #00ff00, 0 0 150px rgba(0,255,0,0.9); transform: scale(1.08) translateY(-10px); }
-            70% { transform: scale(1.03) translateY(-3px); }
+            0%, 100% { 
+                box-shadow: var(--default-shadow);
+                transform: scale(1);
+            }
+            30% {
+                box-shadow: 
+                    0 0 50px #00ff00, 
+                    0 0 100px rgba(0, 255, 0, 0.7),
+                    0 10px 40px rgba(0, 0, 0, 0.5);
+                transform: scale(1.05) translateY(-5px);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 80px #00ff00, 
+                    0 0 150px rgba(0, 255, 0, 0.9),
+                    0 20px 60px rgba(0, 0, 0, 0.6);
+                transform: scale(1.08) translateY(-10px);
+            }
+            70% {
+                transform: scale(1.03) translateY(-3px);
+            }
         }
 
-        .country-card.mega-boost .country-image { animation: imageMegaBoost 1s ease; }
+        .country-card.mega-boost .country-image {
+            animation: imageMegaBoost 1s ease;
+        }
 
         @keyframes imageMegaBoost {
             0%, 100% { transform: scale(1); filter: brightness(1); }
@@ -225,210 +394,549 @@
             80% { transform: scale(1.2) rotate(-5deg); filter: brightness(1.3); }
         }
 
+        /* Screen flash for mega boost */
         .mega-flash {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: radial-gradient(circle, rgba(0,255,0,0.4) 0%, transparent 70%);
-            pointer-events: none; z-index: 900; opacity: 0;
+            pointer-events: none;
+            z-index: 900;
+            opacity: 0;
         }
 
-        .mega-flash.active { animation: megaFlash 0.5s ease; }
-        @keyframes megaFlash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+        .mega-flash.active {
+            animation: megaFlash 0.5s ease;
+        }
 
+        @keyframes megaFlash {
+            0% { opacity: 0; }
+            30% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Country Image on Bar */
         .country-image {
-            width: 50px; height: 50px;
-            border-radius: 50%; object-fit: cover;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
             margin-right: -5px;
-            border: 3px solid rgba(255,255,255,0.9);
+            border: 3px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 0 15px var(--country-glow), 0 4px 10px rgba(0,0,0,0.4);
-            flex-shrink: 0; z-index: 5;
+            flex-shrink: 0;
+            z-index: 5;
             animation: imagePulse 2s ease-in-out infinite;
             background: #1a1a2e;
         }
 
-        @keyframes imagePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        .country-card:hover .country-image { animation: imageHover 0.3s ease forwards; }
-        @keyframes imageHover { to { transform: scale(1.15); } }
+        @keyframes imagePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
+        .country-card:hover .country-image {
+            animation: imageHover 0.3s ease forwards;
+        }
+
+        @keyframes imageHover {
+            to { transform: scale(1.15); }
+        }
+
+        /* Percentage Text - Inside Bar Left */
         .progress-text {
-            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-            font-size: 14px; font-weight: 900; color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.7); z-index: 2;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+            z-index: 2;
+        }
+
+        /* ==================== LEADERBOARD - RIGHT SIDE ==================== */
+        .leaderboard {
+            width: 35%;
+            min-width: 280px;
+            max-width: 350px;
+            background: linear-gradient(180deg, rgba(20, 20, 35, 0.98) 0%, rgba(10, 10, 20, 0.98) 100%);
+            border-left: 3px solid #00ffff;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0, 255, 255, 0.15);
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .leaderboard h2 {
+            color: #00ffff;
+            font-size: 22px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .leaderboard-subtitle {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .ranking-list {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ranking-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--rank-color);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .ranking-item:hover {
+            background: rgba(0, 255, 255, 0.08);
+            transform: translateX(-3px);
+        }
+
+        .rank-badge {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 900;
+            font-size: 12px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; box-shadow: 0 0 15px rgba(255, 215, 0, 0.5); }
+        .rank-2 { background: linear-gradient(135deg, #e0e0e0, #a0a0a0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+        .rank-other { background: rgba(0, 255, 255, 0.15); color: #00ffff; }
+
+        /* Circular Image in Leaderboard */
+        .ranking-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 2px solid var(--rank-color, #00ffff);
+            box-shadow: 0 0 10px var(--rank-glow, rgba(0, 255, 255, 0.3));
+            flex-shrink: 0;
+            background: #1a1a2e;
+        }
+
+        .ranking-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ranking-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ranking-percent {
+            font-size: 10px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .ranking-wins {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-left: 10px;
+        }
+
+        .ranking-wins-label {
+            font-size: 9px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .stat-value {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .connected .status-dot { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        .disconnected .status-dot { background: #ff0000; animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.9); }
         }
 
         /* Hidden elements */
-        .country-header, .gift-hints, .country-info, .country-flag { display: none; }
+        .country-header,
+        .gift-hints,
+        .country-info,
+        .country-flag {
+            display: none;
+        }
 
-        /* ==================== LEADERBOARD ==================== */
+        /* Leaderboard Sidebar */
         .leaderboard {
             width: 280px;
             background: linear-gradient(180deg, #12121a 0%, #0a0a0f 100%);
             border-left: 2px solid #00ffff;
             padding: 20px 15px;
-            display: flex; flex-direction: column;
-            box-shadow: -5px 0 30px rgba(0,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 30px rgba(0, 255, 255, 0.1);
         }
 
         .leaderboard h2 {
-            text-align: center; color: #00ffff;
-            font-size: 18px; margin-bottom: 5px;
-            text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(0,255,255,0.5);
+            text-align: center;
+            color: #00ffff;
+            font-size: 18px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
 
         .leaderboard-subtitle {
-            text-align: center; color: #666;
-            font-size: 10px; margin-bottom: 15px;
-            text-transform: uppercase; letter-spacing: 2px;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .ranking-list { flex: 1; overflow-y: auto; }
+        .ranking-list {
+            flex: 1;
+            overflow-y: auto;
+        }
 
         .ranking-item {
-            display: flex; align-items: center;
-            padding: 10px; margin-bottom: 6px;
-            background: rgba(255,255,255,0.03);
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
-            border: 1px solid rgba(0,255,255,0.1);
+            border: 1px solid rgba(0, 255, 255, 0.1);
             transition: all 0.3s ease;
-            position: relative; overflow: hidden;
         }
 
-        .ranking-item::before {
-            content: ''; position: absolute;
-            left: 0; top: 0; bottom: 0; width: 4px;
-            background: var(--rank-color);
-            border-radius: 12px 0 0 12px;
+        .ranking-item:hover {
+            background: rgba(0, 255, 255, 0.05);
         }
-
-        .ranking-item:hover { background: rgba(0,255,255,0.05); }
 
         .rank-badge {
-            width: 24px; height: 24px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; font-weight: bold;
-            margin-right: 10px; font-size: 11px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 11px;
         }
 
         .rank-1 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
         .rank-2 { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #000; }
         .rank-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
-        .rank-other { background: rgba(0,255,255,0.2); color: #00ffff; }
+        .rank-other { background: rgba(0, 255, 255, 0.2); color: #00ffff; }
 
-        .ranking-image {
-            width: 40px; height: 40px;
-            border-radius: 50%; object-fit: cover;
-            margin-right: 10px;
-            border: 2px solid var(--rank-color, #00ffff);
-            box-shadow: 0 0 10px var(--rank-glow, rgba(0,255,255,0.3));
-            flex-shrink: 0; background: #1a1a2e;
+        .ranking-flag {
+            font-size: 20px;
+            margin-right: 8px;
         }
 
-        .ranking-info { flex: 1; min-width: 0; }
-        .ranking-name { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ranking-percent { font-size: 10px; color: #888; }
-        .ranking-wins { font-size: 16px; font-weight: bold; color: #ffd700; }
-        .ranking-wins-label { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .ranking-info {
+            flex: 1;
+        }
 
-        .stats-panel { margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,255,255,0.2); }
-        .stat-item { display: flex; justify-content: space-between; padding: 5px 0; font-size: 11px; color: #888; }
-        .stat-value { color: #00ffff; font-weight: bold; }
+        .ranking-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .ranking-percent {
+            font-size: 10px;
+            color: #888;
+        }
+
+        .ranking-wins {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .stats-panel {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .stat-value {
+            color: #00ffff;
+            font-weight: bold;
+        }
 
         .connection-status {
-            display: flex; align-items: center; justify-content: center;
-            padding: 8px; margin-top: 10px;
-            border-radius: 8px; font-size: 10px;
-            text-transform: uppercase; letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .status-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%; margin-right: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
             animation: pulse 2s infinite;
         }
 
         .connected .status-dot { background: #00ff00; }
-        .connecting .status-dot { background: #ffaa00; animation: pulse 0.5s infinite; }
         .disconnected .status-dot { background: #ff0000; animation: none; }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
-        /* ==================== VICTORY ==================== */
+        /* Victory Overlay */
         .victory-overlay {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.98) 100%);
-            display: none; justify-content: center; align-items: center; flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.98) 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
             z-index: 1000;
         }
 
-        .victory-overlay.active { display: flex; animation: victoryFadeIn 0.5s ease; }
-        @keyframes victoryFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .victory-overlay.active {
+            display: flex;
+            animation: victoryFadeIn 0.5s ease;
+        }
+
+        @keyframes victoryFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
         .victory-image {
-            width: 180px; height: 180px;
-            border-radius: 50%; object-fit: cover;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
             margin-bottom: 25px;
             border: 6px solid #ffd700;
-            box-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 80px rgba(255,215,0,0.5), 0 0 120px rgba(255,215,0,0.3);
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.8),
+                0 0 80px rgba(255, 215, 0, 0.5),
+                0 0 120px rgba(255, 215, 0, 0.3);
             animation: victoryImageBounce 0.5s ease infinite alternate;
         }
 
-        @keyframes victoryImageBounce { from { transform: scale(1) rotate(-5deg); } to { transform: scale(1.1) rotate(5deg); } }
+        @keyframes victoryImageBounce {
+            from { transform: scale(1) rotate(-5deg); }
+            to { transform: scale(1.1) rotate(5deg); }
+        }
 
         .victory-title {
-            font-size: 56px; font-weight: 900; color: #ffd700;
-            text-transform: uppercase; letter-spacing: 8px;
-            text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.6), 0 0 60px rgba(255,215,0,0.4);
+            font-size: 56px;
+            font-weight: 900;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            text-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.8),
+                0 0 40px rgba(255, 215, 0, 0.6),
+                0 0 60px rgba(255, 215, 0, 0.4);
             margin-bottom: 10px;
             animation: victoryTitleGlow 0.5s ease infinite alternate;
         }
 
         @keyframes victoryTitleGlow {
-            from { text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 40px rgba(255,215,0,0.6); transform: scale(1); }
-            to { text-shadow: 0 0 40px rgba(255,215,0,1), 0 0 80px rgba(255,215,0,0.8); transform: scale(1.02); }
+            from { 
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.6);
+                transform: scale(1);
+            }
+            to { 
+                text-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 215, 0, 0.8), 0 0 120px rgba(255, 215, 0, 0.6);
+                transform: scale(1.02);
+            }
         }
 
         .victory-country {
-            font-size: 48px; font-weight: 800; color: #fff;
+            font-size: 48px;
+            font-weight: 800;
+            color: #fff;
             margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
             animation: victoryCountryPulse 1s ease infinite;
         }
 
-        @keyframes victoryCountryPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
-        .victory-contributor { font-size: 24px; color: #00ffff; margin-bottom: 30px; text-shadow: 0 0 15px rgba(0,255,255,0.5); }
-        .victory-timer { font-size: 28px; color: #888; animation: timerPulse 1s ease infinite; }
-        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        /* ==================== FIREWORKS ==================== */
-        #fireworks-canvas {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            pointer-events: none; z-index: 999;
+        @keyframes victoryCountryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
-        /* ==================== ACTIVITY FEED ==================== */
+        .victory-contributor {
+            font-size: 24px;
+            color: #00ffff;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .victory-timer {
+            font-size: 28px;
+            color: #888;
+            animation: timerPulse 1s ease infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Fireworks */
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Activity Feed */
         .activity-feed {
-            position: fixed; bottom: 100px; left: 20px;
-            width: 300px; max-height: 150px;
-            overflow: hidden; z-index: 100;
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            width: 300px;
+            max-height: 150px;
+            overflow: hidden;
+            z-index: 100;
         }
 
         .feed-item {
-            padding: 8px 12px; margin-bottom: 5px;
-            background: rgba(0,0,0,0.85);
-            border-radius: 10px; font-size: 12px;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 10px;
+            font-size: 12px;
             animation: slideIn 0.3s ease;
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             border-left: 3px solid;
         }
 
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
         .feed-item.boost { border-color: #00ff88; }
         .feed-item.sabotage { border-color: #ff4444; }
+
         .feed-emoji { font-size: 16px; }
         .feed-user { color: #00ffff; font-weight: bold; }
         .feed-action { color: #888; }
@@ -436,21 +944,26 @@
         .feed-item.boost .feed-target { color: #00ff88; }
         .feed-item.sabotage .feed-target { color: #ff4444; }
 
-        /* ==================== NOTIFICATIONS ==================== */
+        /* Gift Notification */
         .gift-notification {
-            position: fixed; top: 50%; left: 50%;
+            position: fixed;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 48px; font-weight: 900; z-index: 500;
+            font-size: 48px;
+            font-weight: 900;
+            z-index: 500;
             animation: popIn 1.2s ease forwards;
-            pointer-events: none; text-align: center;
+            pointer-events: none;
+            text-align: center;
         }
 
         .gift-notification .emoji { font-size: 70px; display: block; }
-        .gift-notification.boost { color: #00ff88; text-shadow: 0 0 30px rgba(0,255,136,0.8); }
-        .gift-notification.comment { color: #6366f1; text-shadow: 0 0 30px rgba(99,102,241,0.8); }
-        .gift-notification.mega {
-            color: #ffcc00;
-            text-shadow: 0 0 40px rgba(255,200,0,1), 0 0 80px rgba(255,102,0,0.8);
+        .gift-notification.boost { color: #00ff88; text-shadow: 0 0 30px rgba(0, 255, 136, 0.8); }
+        .gift-notification.comment { color: #6366f1; text-shadow: 0 0 30px rgba(99, 102, 241, 0.8); }
+        .gift-notification.mega { 
+            color: #ffcc00; 
+            text-shadow: 0 0 40px rgba(255, 200, 0, 1), 0 0 80px rgba(255, 102, 0, 0.8);
             animation: megaNotification 1.5s ease forwards;
         }
 
@@ -470,116 +983,119 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) translateY(-40px); }
         }
 
-        /* ==================== CONTROL PANEL ==================== */
+        /* Touch Control Panel */
         .control-panel {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(10,10,20,0.98);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 20, 0.98);
             border-top: 3px solid #ff6600;
-            z-index: 1001; transition: transform 0.3s ease;
+            z-index: 1001;
+            transition: transform 0.3s ease;
             max-height: 50vh;
+            display: none;
+        }
+        .control-panel.visible {
+            display: block;
         }
 
-        .control-panel.minimized { transform: translateY(calc(100% - 50px)); }
+        .control-panel.minimized {
+            transform: translateY(calc(100% - 50px));
+        }
 
         .panel-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 12px 20px;
             background: linear-gradient(90deg, #ff660033, transparent);
-            min-height: 50px; cursor: pointer;
+            min-height: 50px;
+            cursor: pointer;
         }
 
-        .panel-header span { font-weight: bold; color: #ff6600; font-size: 16px; }
+        .panel-header span {
+            font-weight: bold;
+            color: #ff6600;
+            font-size: 16px;
+        }
 
         .toggle-btn {
-            background: #ff6600; border: none; color: #000;
-            width: 40px; height: 40px; border-radius: 10px;
-            font-size: 24px; font-weight: bold; cursor: pointer;
+            background: #ff6600;
+            border: none;
+            color: #000;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .panel-content {
             padding: 15px 20px;
-            display: flex; gap: 15px;
+            display: flex;
+            gap: 15px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
 
         .action-buttons {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 8px; flex-shrink: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .action-btn {
-            padding: 15px 10px; border: none; border-radius: 12px;
-            color: #fff; font-size: 14px; font-weight: bold;
-            cursor: pointer; display: flex; flex-direction: column;
-            align-items: center; gap: 3px; min-width: 90px;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            min-width: 90px;
         }
 
         .action-btn small { font-size: 11px; opacity: 0.9; display: block; margin-top: 2px; }
-        .comment-btn { background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 4px 20px rgba(99,102,241,0.4); }
-        .boost-btn { background: linear-gradient(135deg, #00c853, #009624); box-shadow: 0 4px 20px rgba(0,200,83,0.4); }
-        .mega-btn { background: linear-gradient(135deg, #ff6600, #ff9500, #ffcc00); box-shadow: 0 4px 20px rgba(255,102,0,0.5); animation: megaBtnPulse 2s ease infinite; }
-
-        @keyframes megaBtnPulse {
-            0%, 100% { box-shadow: 0 4px 20px rgba(255,102,0,0.5); }
-            50% { box-shadow: 0 4px 35px rgba(255,200,0,0.7); }
+        .comment-btn { background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); }
+        .boost-btn { background: linear-gradient(135deg, #00c853, #009624); box-shadow: 0 4px 20px rgba(0, 200, 83, 0.4); }
+        .mega-btn { 
+            background: linear-gradient(135deg, #ff6600, #ff9500, #ffcc00); 
+            box-shadow: 0 4px 20px rgba(255, 102, 0, 0.5);
+            animation: megaBtnPulse 2s ease infinite;
         }
-
+        @keyframes megaBtnPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(255, 102, 0, 0.5); }
+            50% { box-shadow: 0 4px 35px rgba(255, 200, 0, 0.7); }
+        }
         .action-btn:active { transform: scale(0.95); }
 
-        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex-shrink: 0; }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            flex-shrink: 0;
+        }
 
         .quick-btn {
-            padding: 15px 20px; border: 2px solid #444;
-            border-radius: 12px; background: #2a2a3e;
-            color: #fff; font-size: 12px; cursor: pointer;
+            padding: 15px 20px;
+            border: 2px solid #444;
+            border-radius: 12px;
+            background: #2a2a3e;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
         }
 
         .quick-btn:active { background: #4a4a5e; border-color: #ff6600; }
 
-        /* ==================== CHEER NOTIFICATION ==================== */
-        .cheer-notification {
-            position: fixed; top: 80px; left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(255,215,0,0.95), rgba(255,165,0,0.95));
-            padding: 15px 30px; border-radius: 50px;
-            display: flex; align-items: center; gap: 15px;
-            z-index: 600;
-            animation: cheerSlide 4s ease forwards;
-            box-shadow: 0 10px 40px rgba(255,215,0,0.4);
-            max-width: 90vw;
-        }
-
-        .cheer-flag { font-size: 40px; animation: cheerBounce 0.5s ease infinite alternate; }
-        .cheer-text { font-size: 18px; font-weight: bold; color: #000; text-shadow: 0 1px 2px rgba(255,255,255,0.3); }
-
-        @keyframes cheerSlide {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
-            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-        }
-
-        @keyframes cheerBounce { from { transform: scale(1) rotate(-5deg); } to { transform: scale(1.1) rotate(5deg); } }
-
-        /* ==================== AUDIO TOGGLE ==================== */
-        .audio-toggle {
-            position: fixed; top: 20px; right: 20px;
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #333, #222);
-            border: 2px solid #00ffff; color: #00ffff;
-            font-size: 24px; cursor: pointer;
-            z-index: 500;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 20px rgba(0,255,255,0.3);
-            transition: all 0.2s;
-        }
-
-        .audio-toggle:hover { transform: scale(1.1); box-shadow: 0 4px 30px rgba(0,255,255,0.5); }
-        .audio-toggle:active { transform: scale(0.95); }
-
-        /* ==================== RESPONSIVE ==================== */
+        /* Responsive - TikTok 9:16 optimized */
         @media (max-width: 1000px) {
             .game-area { max-width: 60%; }
             .leaderboard { width: 40%; min-width: 240px; }
@@ -589,10 +1105,13 @@
 
         @media (max-width: 800px) {
             .container { flex-direction: column; }
-            .game-area { max-width: 100%; flex: none; height: 60vh; }
-            .leaderboard {
-                width: 100%; max-width: 100%; min-width: 100%;
-                height: 40vh; border-left: none;
+            .game-area { max-width: 100%; flex: none; height: 65vh; }
+            .leaderboard { 
+                width: 100%; 
+                max-width: 100%; 
+                min-width: 100%;
+                height: 35vh;
+                border-left: none;
                 border-top: 3px solid #00ffff;
             }
             .cards-grid { gap: 5px; padding: 5px 10px; }
@@ -603,53 +1122,117 @@
         }
 
         @media (max-width: 500px) {
-            .game-area { height: 55vh; padding: 8px; }
-            .leaderboard { height: 45vh; padding: 10px; }
-            .cards-grid { gap: 3px; padding: 2px 5px; }
-            .progress-container { height: 30px; }
-            .country-image { width: 38px; height: 38px; margin-right: -3px; }
-            .country-name { font-size: 8px; letter-spacing: 0.5px; }
-            .progress-text { font-size: 11px; left: 8px; }
-            .game-title h1 { font-size: 16px; letter-spacing: 1px; }
-            .game-subtitle { font-size: 7px; }
-            .ranking-item { flex: 1 1 100%; padding: 8px; }
-            .leaderboard h2 { font-size: 16px; }
-            .leaderboard-subtitle { font-size: 8px; margin-bottom: 8px; }
-            .ranking-image { width: 30px; height: 30px; margin-right: 8px; }
-            .ranking-name { font-size: 11px; }
-            .activity-feed { width: 200px; bottom: 60px; left: 10px; }
-            .feed-item { font-size: 10px; padding: 5px 8px; }
-            .victory-title { font-size: 36px; letter-spacing: 4px; }
-            .victory-country { font-size: 32px; }
-            .victory-image { width: 120px; height: 120px; }
-            .victory-contributor { font-size: 18px; }
-            .victory-timer { font-size: 20px; }
-            .audio-toggle { top: 10px; right: 10px; width: 40px; height: 40px; font-size: 18px; }
-            .cheer-notification { top: 55px; padding: 10px 18px; }
-            .cheer-flag { font-size: 28px; }
-            .cheer-text { font-size: 13px; }
+            .game-area { height: 60vh; padding: 10px; }
+            .leaderboard { height: 40vh; padding: 10px; }
+            .cards-grid { gap: 4px; padding: 3px 8px; }
+            .progress-container { height: 32px; }
+            .country-image { width: 40px; height: 40px; margin-right: -3px; }
+            .country-name { font-size: 9px; }
+            .progress-text { font-size: 12px; left: 10px; }
+            .game-title h1 { font-size: 18px; }
+            .game-subtitle { font-size: 8px; }
+            .ranking-item { flex: 1 1 100%; }
+            .leaderboard h2 { font-size: 18px; }
         }
 
+        /* Hide control panel on small heights */
         @media (max-height: 700px) {
             .control-panel { display: none; }
             .activity-feed { bottom: 10px; left: 10px; width: 250px; }
         }
 
-        @media (max-height: 500px) {
-            .game-title { margin-bottom: 4px; }
-            .game-title h1 { font-size: 14px; }
-            .game-subtitle { display: none; }
-            .cards-grid { gap: 2px; padding: 1px 4px; }
-            .progress-container { height: 26px; }
-            .country-image { width: 32px; height: 32px; }
-            .country-name { font-size: 7px; }
-            .progress-text { font-size: 10px; }
-        }
-
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: rgba(0,255,255,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.3); border-radius: 3px; }
+
+        /* Cheer Notification */
+        .cheer-notification {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(255, 165, 0, 0.95));
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 600;
+            animation: cheerSlide 4s ease forwards;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
+            max-width: 90vw;
+        }
+
+        .cheer-flag {
+            font-size: 40px;
+            animation: cheerBounce 0.5s ease infinite alternate;
+        }
+
+        .cheer-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+        }
+
+        @keyframes cheerSlide {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        @keyframes cheerBounce {
+            from { transform: scale(1) rotate(-5deg); }
+            to { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Audio Toggle Button */
+        .audio-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #333, #222);
+            border: 2px solid #00ffff;
+            color: #00ffff;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+            transition: all 0.2s;
+        }
+
+        .audio-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .audio-toggle:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 900px) {
+            .audio-toggle {
+                top: 10px;
+                right: 10px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+            .cheer-notification {
+                top: 60px;
+                padding: 10px 20px;
+            }
+            .cheer-flag { font-size: 30px; }
+            .cheer-text { font-size: 14px; }
+        }
     </style>
 </head>
 <body>
@@ -658,19 +1241,21 @@
         <div class="game-area">
             <div class="game-title">
                 <h1>⚔️ BATALLA LATINA ⚔️</h1>
-                <div class="game-subtitle">Comenta el nombre de tu país • ¡500 para ganar!</div>
+                <div class="game-subtitle">Comenta el nombre de tu país • Envía regalos • ¡500 para ganar!</div>
             </div>
+
+            <!-- 3x3 Grid of Country Cards -->
             <div class="cards-grid" id="cards-grid"></div>
         </div>
 
-        <!-- Leaderboard Sidebar -->
+        <!-- Leaderboard Sidebar - Right Side -->
         <div class="leaderboard">
             <div class="leaderboard-header">
                 <h2>🏆 VICTORIAS</h2>
                 <div class="leaderboard-subtitle">Ranking del Día</div>
             </div>
             <div class="ranking-list" id="ranking-list"></div>
-
+            
             <div class="stats-panel">
                 <div class="stat-item">
                     <span>Ronda</span>
@@ -685,15 +1270,15 @@
                     <span class="stat-value" id="decay-timer">15s</span>
                 </div>
             </div>
-
+            
             <div class="connection-status disconnected" id="connection-status">
                 <span class="status-dot"></span>
-                <span id="status-text">Esperando conexión…</span>
+                <span id="status-text">Desconectado</span>
             </div>
         </div>
     </div>
 
-    <!-- Audio Toggle -->
+    <!-- Audio Toggle Button -->
     <button class="audio-toggle" id="audio-toggle" onclick="toggleAudio()" title="Mute cheers">🔊</button>
 
     <!-- Activity Feed -->
@@ -714,7 +1299,7 @@
     <!-- Mega Boost Flash -->
     <div class="mega-flash" id="mega-flash"></div>
 
-    <!-- Control Panel (testing) -->
+    <!-- Touch Control Panel -->
     <div class="control-panel" id="control-panel">
         <div class="panel-header" onclick="togglePanel()">
             <span>🎮 TAP COUNTRY ABOVE • THEN ACTION BELOW</span>
@@ -733,138 +1318,197 @@
                 </button>
             </div>
             <div class="quick-actions">
+                <button class="quick-btn" onclick="testCheer()">📢 Next</button>
+                <button class="quick-btn" onclick="testAllCheers()">🔊 Test All</button>
                 <button class="quick-btn" onclick="startDemoMode()">▶️ Demo</button>
                 <button class="quick-btn" onclick="resetRound()">🔄 Reset</button>
-                <button class="quick-btn" onclick="clearAllWins()">🗑️ Clear</button>
             </div>
         </div>
     </div>
 
-    <!-- ==================== PLAYROOM KIT SDK ==================== -->
-    <script src="https://unpkg.com/playroomkit/multiplayer.full.umd.js" crossorigin="anonymous"></script>
-
     <script>
         // ==================== CONFIGURATION ====================
         const CONFIG = {
+            wsUrl: 'ws://localhost:21213',
             decayInterval: 15000,
             decayAmount: 1.5,
             victoryDuration: 45000,
-            maxMoves: 500,
-            commentMoves: 1,
-            smallGiftMoves: 2,
-            boostMoves: 125,
-            sabotageAmount: 25
+            maxMoves: 500, // Total moves to win
+            commentMoves: 1, // Comment = 1 move
+            smallGiftMoves: 2, // 1-coin gift = 2 moves
+            boostMoves: 125, // 100-coin gift = 125 moves
+            sabotageAmount: 25 // Still percentage based
         };
 
         // ==================== COUNTRY DATA ====================
         const countries = {
             colombia: {
-                name: 'Colombia', flag: '🇨🇴', abbr: ['co', 'col'],
-                color: '#fcd116', glow: 'rgba(252, 209, 22, 0.5)',
+                name: 'Colombia',
+                flag: '🇨🇴',
+                abbr: ['co', 'col'],
+                color: '#fcd116',
+                glow: 'rgba(252, 209, 22, 0.5)',
                 image: 'https://flagcdn.com/w160/co.png',
-                moves: 0, contributors: {},
-                smallGifts: ['rose', '5655'],
-                boostGifts: ['little crown', 'crown', '5830'],
-                smallEmoji: '🌹', boostEmoji: '👑'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['rose', '5655'], // 1-coin
+                boostGifts: ['little crown', 'crown', '5830'], // 99-coin
+                smallEmoji: '🌹',
+                boostEmoji: '👑'
             },
             venezuela: {
-                name: 'Venezuela', flag: '🇻🇪', abbr: ['ve', 'ven'],
-                color: '#cf142b', glow: 'rgba(207, 20, 43, 0.5)',
+                name: 'Venezuela',
+                flag: '🇻🇪',
+                abbr: ['ve', 'ven'],
+                color: '#cf142b',
+                glow: 'rgba(207, 20, 43, 0.5)',
                 image: 'https://flagcdn.com/w160/ve.png',
-                moves: 0, contributors: {},
-                smallGifts: ['tiktok', 'tiktok logo', '5906'],
-                boostGifts: ['cap', '5829'],
-                smallEmoji: '🎵', boostEmoji: '🧢'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['tiktok', 'tiktok logo', '5906'], // 1-coin
+                boostGifts: ['cap', '5829'], // 99-coin
+                smallEmoji: '🎵',
+                boostEmoji: '🧢'
             },
             ecuador: {
-                name: 'Ecuador', flag: '🇪🇨', abbr: ['ec', 'ecu'],
-                color: '#ffd100', glow: 'rgba(255, 209, 0, 0.5)',
+                name: 'Ecuador',
+                flag: '🇪🇨',
+                abbr: ['ec', 'ecu'],
+                color: '#ffd100',
+                glow: 'rgba(255, 209, 0, 0.5)',
                 image: 'https://flagcdn.com/w160/ec.png',
-                moves: 0, contributors: {},
-                smallGifts: ['ice cream', 'ice cream cone', 'icecream', '5826'],
-                boostGifts: ['paper crane', 'crane', '5900'],
-                smallEmoji: '🍦', boostEmoji: '🦢'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['ice cream', 'ice cream cone', 'icecream', '5826'], // 1-coin
+                boostGifts: ['paper crane', 'crane', '5900'], // 99-coin
+                smallEmoji: '🍦',
+                boostEmoji: '🦢'
             },
             mexico: {
-                name: 'México', flag: '🇲🇽', abbr: ['mx', 'mex'],
-                color: '#006847', glow: 'rgba(0, 104, 71, 0.5)',
+                name: 'México',
+                flag: '🇲🇽',
+                abbr: ['mx', 'mex'],
+                color: '#006847',
+                glow: 'rgba(0, 104, 71, 0.5)',
                 image: 'https://flagcdn.com/w160/mx.png',
-                moves: 0, contributors: {},
-                smallGifts: ['chilli', 'chilli pepper', 'pepper', 'chile', '5765'],
-                boostGifts: ['singing magic', 'singing', 'magic', '5878'],
-                smallEmoji: '🌶️', boostEmoji: '🎤'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['chilli', 'chilli pepper', 'pepper', 'chile', '5765'], // 1-coin
+                boostGifts: ['singing magic', 'singing', 'magic', '5878'], // 100-coin
+                smallEmoji: '🌶️',
+                boostEmoji: '🎤'
             },
             elsalvador: {
-                name: 'El Salvador', flag: '🇸🇻', abbr: ['sv', 'sal'],
-                color: '#0047ab', glow: 'rgba(0, 71, 171, 0.5)',
+                name: 'El Salvador',
+                flag: '🇸🇻',
+                abbr: ['sv', 'sal'],
+                color: '#0047ab',
+                glow: 'rgba(0, 71, 171, 0.5)',
                 image: 'https://flagcdn.com/w160/sv.png',
-                moves: 0, contributors: {},
-                smallGifts: ['thumbs up', 'thumbsup', 'thumb', '5659'],
-                boostGifts: ['confetti', '5839'],
-                smallEmoji: '👍', boostEmoji: '🎉'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['thumbs up', 'thumbsup', 'thumb', '5659'], // 1-coin
+                boostGifts: ['confetti', '5839'], // 100-coin
+                smallEmoji: '👍',
+                boostEmoji: '🎉'
             },
             nicaragua: {
-                name: 'Nicaragua', flag: '🇳🇮', abbr: ['ni', 'nic'],
-                color: '#17c3b2', glow: 'rgba(23, 195, 178, 0.5)',
+                name: 'Nicaragua',
+                flag: '🇳🇮',
+                abbr: ['ni', 'nic'],
+                color: '#17c3b2',
+                glow: 'rgba(23, 195, 178, 0.5)',
                 image: 'https://flagcdn.com/w160/ni.png',
-                moves: 0, contributors: {},
-                smallGifts: ['gg', '5905'],
-                boostGifts: ['super gg', 'supergg', '5879'],
-                smallEmoji: '🎮', boostEmoji: '🏆'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['gg', '5905'], // 1-coin
+                boostGifts: ['super gg', 'supergg', '5879'], // 100-coin
+                smallEmoji: '🎮',
+                boostEmoji: '🏆'
             },
             guatemala: {
-                name: 'Guatemala', flag: '🇬🇹', abbr: ['gt', 'gua'],
-                color: '#4997d0', glow: 'rgba(73, 151, 208, 0.5)',
+                name: 'Guatemala',
+                flag: '🇬🇹',
+                abbr: ['gt', 'gua'],
+                color: '#4997d0',
+                glow: 'rgba(73, 151, 208, 0.5)',
                 image: 'https://flagcdn.com/w160/gt.png',
-                moves: 0, contributors: {},
-                smallGifts: ['club cheers', 'cheers', 'club', '5827'],
-                boostGifts: ['hand hearts', 'handhearts', 'hand heart', '5880'],
-                smallEmoji: '🥂', boostEmoji: '🫶'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['club cheers', 'cheers', 'club', '5827'], // 1-coin
+                boostGifts: ['hand hearts', 'handhearts', 'hand heart', '5880'], // 100-coin
+                smallEmoji: '🥂',
+                boostEmoji: '🫶'
             },
             peru: {
-                name: 'Perú', flag: '🇵🇪', abbr: ['pe', 'per'],
-                color: '#d91023', glow: 'rgba(217, 16, 35, 0.5)',
+                name: 'Perú',
+                flag: '🇵🇪',
+                abbr: ['pe', 'per'],
+                color: '#d91023',
+                glow: 'rgba(217, 16, 35, 0.5)',
                 image: 'https://flagcdn.com/w160/pe.png',
-                moves: 0, contributors: {},
-                smallGifts: ['graduation bouquet', 'graduation', 'bouquet', '5904'],
-                boostGifts: ['game controller', 'controller', 'gamecontroller', '5881'],
-                smallEmoji: '💐', boostEmoji: '🎮'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['graduation bouquet', 'graduation', 'bouquet', '5904'], // 1-coin
+                boostGifts: ['game controller', 'controller', 'gamecontroller', '5881'], // 100-coin
+                smallEmoji: '💐',
+                boostEmoji: '🎮'
             },
             puertorico: {
-                name: 'Puerto Rico', flag: '🇵🇷', abbr: ['pr', 'pur'],
-                color: '#eb4034', glow: 'rgba(235, 64, 52, 0.5)',
+                name: 'Puerto Rico',
+                flag: '🇵🇷',
+                abbr: ['pr', 'pur'],
+                color: '#eb4034',
+                glow: 'rgba(235, 64, 52, 0.5)',
                 image: 'https://flagcdn.com/w160/pr.png',
-                moves: 0, contributors: {},
-                smallGifts: ['glow stick', 'glowstick', 'glow', '5820'],
-                boostGifts: ['marvelous confetti', 'marvelous', '5882'],
-                smallEmoji: '✨', boostEmoji: '🎊'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['glow stick', 'glowstick', 'glow', '5820'], // 1-coin
+                boostGifts: ['marvelous confetti', 'marvelous', '5882'], // 100-coin
+                smallEmoji: '✨',
+                boostEmoji: '🎊'
             },
             dominicana: {
-                name: 'Rep. Dominicana', flag: '🇩🇴', abbr: ['do', 'dom', 'rd'],
-                color: '#002d62', glow: 'rgba(0, 45, 98, 0.5)',
+                name: 'Rep. Dominicana',
+                flag: '🇩🇴',
+                abbr: ['do', 'dom', 'rd'],
+                color: '#002d62',
+                glow: 'rgba(0, 45, 98, 0.5)',
                 image: 'https://flagcdn.com/w160/do.png',
-                moves: 0, contributors: {},
-                smallGifts: ['cake slice', 'cake', 'slice', '5659'],
-                boostGifts: ['bowknot', 'bow', '5883'],
-                smallEmoji: '🍰', boostEmoji: '🎀'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['cake slice', 'cake', 'slice', '5659'], // 1-coin
+                boostGifts: ['bowknot', 'bow', '5883'], // 100-coin
+                smallEmoji: '🍰',
+                boostEmoji: '🎀'
             },
             chile: {
-                name: 'Chile', flag: '🇨🇱', abbr: ['cl', 'chi'],
-                color: '#d52b1e', glow: 'rgba(213, 43, 30, 0.5)',
+                name: 'Chile',
+                flag: '🇨🇱',
+                abbr: ['cl', 'chi'],
+                color: '#d52b1e',
+                glow: 'rgba(213, 43, 30, 0.5)',
                 image: 'https://flagcdn.com/w160/cl.png',
-                moves: 0, contributors: {},
-                smallGifts: ['pumpkin', '5660'],
-                boostGifts: ['mishka bear', 'mishka', 'bear', '5879'],
-                smallEmoji: '🎃', boostEmoji: '🧸'
+                moves: 0,
+                contributors: {},
+                smallGifts: ['pumpkin', '5660'], // 1-coin
+                boostGifts: ['mishka bear', 'mishka', 'bear', '5879'], // 100-coin
+                smallEmoji: '🎃',
+                boostEmoji: '🧸'
             },
             trump: {
-                name: 'United States', flag: '🇺🇸', abbr: ['us', 'usa', 'trump'],
-                color: '#3c3b6e', glow: 'rgba(60, 59, 110, 0.5)',
-                image: 'https://flagcdn.com/w160/us.png',
-                moves: 0, contributors: {},
-                smallGifts: ['youre awesome', "you're awesome", 'awesome', '5661'],
-                boostGifts: ['hat and mustache', 'hat mustache', 'mustache', '5884'],
-                smallEmoji: '🌟', boostEmoji: '🎩'
+                name: 'United States',
+                flag: '🇺🇸',
+                abbr: ['us', 'usa', 'trump'],
+                color: '#ff6600',
+                glow: 'rgba(255, 102, 0, 0.5)',
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg',
+                moves: 0,
+                contributors: {},
+                smallGifts: ['youre awesome', 'you\'re awesome', 'awesome', '5661'], // 1-coin
+                boostGifts: ['hat and mustache', 'hat mustache', 'mustache', '5884'], // 99-coin
+                smallEmoji: '🌟',
+                boostEmoji: '🎩'
             }
         };
 
@@ -876,6 +1520,7 @@
             dailyWins: loadDailyWins(),
             decayTimer: 15,
             selectedCountry: null,
+            ws: null,
             connected: false,
             demoInterval: null,
             currentLeader: null,
@@ -885,102 +1530,237 @@
 
         // ==================== SPANISH CHEERS ====================
         const countryChants = {
-            colombia: ["¡Vamos Colombia, tú puedes ganar!", "¡Colombia, Colombia, ole ole olé!", "¡Sí se puede, sí se puede, Colombia!", "¡Este es el país de Colombia!"],
-            venezuela: ["¡Vamos la vinotinto, vamos a ganar!", "¡Venezuela, Venezuela, esta barra te quiere!", "¡Arriba Venezuela, vamos a ganar!", "¡Vinotinto te llevo en el corazón!"],
-            ecuador: ["¡Sí se puede Ecuador, sí se puede!", "¡Ecuador, Ecuador, ole ole olé!", "¡Vamos tricolor, vamos a ganar!", "¡Ecuador mi país, te llevo en mi corazón!"],
-            mexico: ["¡Vamos vamos México, a la delantera!", "¡Cielito lindo, México, México!", "¡Sí se puede, sí se puede, México!", "¡México, México, ra ra ra!"],
-            elsalvador: ["¡Vamos vamos la selecta, vamos a ganar!", "¡El Salvador, El Salvador, ole ole olé!", "¡Pulgarcito de América, adelante!", "¡Arriba la selecta, vamos a ganar!"],
-            nicaragua: ["¡Arriba los pinoleros, vamos a ganar!", "¡Nicaragua, Nicaragua, sí se puede!", "¡Vamos azul y blanco, adelante!", "¡Nicaragua campeón, sí se puede!"],
-            guatemala: ["¡Vamos la azul y blanco, vamos a ganar!", "¡Guatemala, Guatemala, ole ole olé!", "¡Arriba los chapines, sí se puede!", "¡Guate, Guate, vamos Guate!"],
-            peru: ["¡Arriba Perú, arriba arriba!", "¡Perú, Perú, Perú, contigo Perú!", "¡Vamos blanquirroja, vamos a ganar!", "¡Como no te voy a querer, Perú!"],
-            puertorico: ["¡Puerto Rico, lo hace mejor!", "¡Wepa wepa, Puerto Rico!", "¡Boricua, boricua, dale dale!", "¡Puerto Rico me encanta!"],
-            dominicana: ["¡Quisqueya la bella, arriba!", "¡Dominicana, Dominicana, sí se puede!", "¡Aquí llegó la quisqueya!", "¡República Dominicana, a ganar!"],
-            chile: ["¡Chi chi chi, le le le, viva Chile!", "¡Vamos chilenos, vamos a ganar!", "¡Chile, Chile, lindo Chile!", "¡Ceacheí, ceacheí, viva Chile!"],
-            trump: ["Chi-na! Chi-na! Chi-na!", "Money money money! Trump is winning!", "Make America Great Again!", "We're winning, we're winning big league!", "Tremendous! Absolutely tremendous!"]
+            colombia: [
+                "¡Vamos Colombia, tú puedes ganar!",
+                "¡Colombia, Colombia, ole ole olé!",
+                "¡Sí se puede, sí se puede, Colombia!",
+                "¡Este es el país de Colombia!"
+            ],
+            venezuela: [
+                "¡Vamos la vinotinto, vamos a ganar!",
+                "¡Venezuela, Venezuela, esta barra te quiere!",
+                "¡Arriba Venezuela, vamos a ganar!",
+                "¡Vinotinto te llevo en el corazón!"
+            ],
+            ecuador: [
+                "¡Sí se puede Ecuador, sí se puede!",
+                "¡Ecuador, Ecuador, ole ole olé!",
+                "¡Vamos tricolor, vamos a ganar!",
+                "¡Ecuador mi país, te llevo en mi corazón!"
+            ],
+            mexico: [
+                "¡Vamos vamos México, a la delantera!",
+                "¡Cielito lindo, México, México!",
+                "¡Sí se puede, sí se puede, México!",
+                "¡México, México, ra ra ra!"
+            ],
+            elsalvador: [
+                "¡Vamos vamos la selecta, vamos a ganar!",
+                "¡El Salvador, El Salvador, ole ole olé!",
+                "¡Pulgarcito de América, adelante!",
+                "¡Arriba la selecta, vamos a ganar!"
+            ],
+            nicaragua: [
+                "¡Arriba los pinoleros, vamos a ganar!",
+                "¡Nicaragua, Nicaragua, sí se puede!",
+                "¡Vamos azul y blanco, adelante!",
+                "¡Nicaragua campeón, sí se puede!"
+            ],
+            guatemala: [
+                "¡Vamos la azul y blanco, vamos a ganar!",
+                "¡Guatemala, Guatemala, ole ole olé!",
+                "¡Arriba los chapines, sí se puede!",
+                "¡Guate, Guate, vamos Guate!"
+            ],
+            peru: [
+                "¡Arriba Perú, arriba arriba!",
+                "¡Perú, Perú, Perú, contigo Perú!",
+                "¡Vamos blanquirroja, vamos a ganar!",
+                "¡Como no te voy a querer, Perú!"
+            ],
+            puertorico: [
+                "¡Puerto Rico, lo hace mejor!",
+                "¡Wepa wepa, Puerto Rico!",
+                "¡Boricua, boricua, dale dale!",
+                "¡Puerto Rico me encanta!"
+            ],
+            dominicana: [
+                "¡Quisqueya la bella, arriba!",
+                "¡Dominicana, Dominicana, sí se puede!",
+                "¡Aquí llegó la quisqueya!",
+                "¡República Dominicana, a ganar!"
+            ],
+            chile: [
+                "¡Chi chi chi, le le le, viva Chile!",
+                "¡Vamos chilenos, vamos a ganar!",
+                "¡Chile, Chile, lindo Chile!",
+                "¡Ceacheí, ceacheí, viva Chile!"
+            ],
+            trump: [
+                "Chi-na! Chi-na! Chi-na!",
+                "Money money money! Trump is winning!",
+                "Make America Great Again!",
+                "We're winning, we're winning big league!",
+                "Tremendous! Absolutely tremendous!"
+            ]
         };
 
         let speechEnabled = true;
         let speechReady = false;
         let voices = [];
 
-        // ==================== SPEECH SYNTHESIS ====================
+        // Initialize speech synthesis
         function initSpeech() {
-            if (!window.speechSynthesis) return;
+            if (!window.speechSynthesis) {
+                console.log('Speech synthesis not supported');
+                return;
+            }
+
+            // Load voices
             voices = window.speechSynthesis.getVoices();
+            
+            // Chrome loads voices async
             if (voices.length === 0) {
                 window.speechSynthesis.onvoiceschanged = () => {
                     voices = window.speechSynthesis.getVoices();
+                    console.log('Voices loaded:', voices.length);
                     speechReady = true;
                 };
             } else {
                 speechReady = true;
             }
+
+            // Unlock audio on first user interaction
             const unlockAudio = () => {
                 if (window.speechSynthesis) {
                     const unlock = new SpeechSynthesisUtterance('');
                     unlock.volume = 0;
                     window.speechSynthesis.speak(unlock);
+                    console.log('Speech unlocked');
                 }
                 document.removeEventListener('click', unlockAudio);
                 document.removeEventListener('touchstart', unlockAudio);
             };
+
             document.addEventListener('click', unlockAudio);
             document.addEventListener('touchstart', unlockAudio);
         }
 
         function speakCheer(countryId, force = false) {
             if (!speechEnabled || gameState.isVictoryMode) return;
+            
             const now = Date.now();
+            // Don't cheer more often than every 8 seconds (unless forced)
             if (!force && now - gameState.lastCheerTime < 8000) return;
             gameState.lastCheerTime = now;
+
             const chants = countryChants[countryId];
             if (!chants) return;
+
             const chant = chants[Math.floor(Math.random() * chants.length)];
             const country = countries[countryId];
+
+            // Show visual notification regardless of audio
             showCheerNotification(country.flag, chant);
+
+            // Try speech synthesis
             if (window.speechSynthesis) {
                 try {
                     window.speechSynthesis.cancel();
+
                     const utterance = new SpeechSynthesisUtterance(chant);
-                    if (countryId === 'trump') { utterance.lang = 'en-US'; utterance.rate = 0.9; utterance.pitch = 0.8; }
-                    else { utterance.lang = 'es-ES'; utterance.rate = 1.0; utterance.pitch = 1.1; }
+                    
+                    // Use English for Trump, Spanish for others
+                    if (countryId === 'trump') {
+                        utterance.lang = 'en-US';
+                        utterance.rate = 0.9;
+                        utterance.pitch = 0.8; // Lower pitch for Trump impression
+                    } else {
+                        utterance.lang = 'es-ES';
+                        utterance.rate = 1.0;
+                        utterance.pitch = 1.1;
+                    }
                     utterance.volume = 1.0;
+
+                    // Find best voice
                     const currentVoices = window.speechSynthesis.getVoices();
                     let voice;
                     if (countryId === 'trump') {
-                        voice = currentVoices.find(v => v.lang.startsWith('en-US')) || currentVoices.find(v => v.lang.startsWith('en'));
+                        voice = currentVoices.find(v => v.lang.startsWith('en-US')) || 
+                                currentVoices.find(v => v.lang.startsWith('en'));
                     } else {
-                        voice = currentVoices.find(v => v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es'));
+                        voice = currentVoices.find(v => 
+                            v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')
+                        );
                     }
-                    if (voice) utterance.voice = voice;
-                    utterance.onerror = () => playCheerTone(countryId);
+                    
+                    if (voice) {
+                        utterance.voice = voice;
+                        console.log('Using voice:', voice.name);
+                    }
+
+                    utterance.onerror = (e) => {
+                        console.log('Speech error:', e.error);
+                        playCheerTone(countryId);
+                    };
+
                     window.speechSynthesis.speak(utterance);
-                } catch (e) { playCheerTone(countryId); }
-            } else { playCheerTone(countryId); }
+                    console.log('Speaking:', chant);
+
+                } catch (e) {
+                    console.log('Speech failed:', e);
+                    playCheerTone(countryId);
+                }
+            } else {
+                playCheerTone(countryId);
+            }
         }
 
+        // Fallback: Play musical tones for the country
         function playCheerTone(countryId) {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Different melody patterns for each country
                 const melodies = {
-                    colombia: [392, 440, 494, 523, 494, 440], venezuela: [349, 392, 440, 494, 440, 392],
-                    ecuador: [440, 494, 523, 587, 523, 494], mexico: [523, 587, 659, 587, 523, 494],
-                    elsalvador: [392, 440, 523, 440, 392, 349], nicaragua: [440, 523, 440, 523, 587, 494],
-                    guatemala: [349, 440, 523, 440, 349, 392], peru: [494, 523, 587, 659, 587, 523],
-                    puertorico: [523, 587, 659, 698, 659, 587], dominicana: [392, 494, 587, 494, 392, 440],
-                    chile: [523, 523, 587, 587, 659, 523], trump: [659, 659, 587, 523, 587, 659, 698, 659]
+                    colombia: [392, 440, 494, 523, 494, 440],
+                    venezuela: [349, 392, 440, 494, 440, 392],
+                    ecuador: [440, 494, 523, 587, 523, 494],
+                    mexico: [523, 587, 659, 587, 523, 494],
+                    elsalvador: [392, 440, 523, 440, 392, 349],
+                    nicaragua: [440, 523, 440, 523, 587, 494],
+                    guatemala: [349, 440, 523, 440, 349, 392],
+                    peru: [494, 523, 587, 659, 587, 523],
+                    puertorico: [523, 587, 659, 698, 659, 587],
+                    dominicana: [392, 494, 587, 494, 392, 440],
+                    chile: [523, 523, 587, 587, 659, 523],
+                    trump: [659, 659, 587, 523, 587, 659, 698, 659] // More dramatic for Trump
                 };
+
                 const notes = melodies[countryId] || melodies.mexico;
+                const duration = 0.15;
+
                 notes.forEach((freq, i) => {
-                    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                    osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.type = 'sine'; osc.frequency.value = freq;
-                    const startTime = audioCtx.currentTime + (i * 0.15);
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    
+                    const startTime = audioCtx.currentTime + (i * duration);
                     gain.gain.setValueAtTime(0.3, startTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.15);
-                    osc.start(startTime); osc.stop(startTime + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                    
+                    osc.start(startTime);
+                    osc.stop(startTime + duration);
                 });
-            } catch (e) {}
+
+            } catch (e) {
+                console.log('Audio fallback failed:', e);
+            }
         }
 
         function showCheerNotification(flag, text) {
@@ -993,20 +1773,32 @@
 
         function checkLeaderAndCheer() {
             if (gameState.isVictoryMode) return;
-            let leader = null, maxMoves = 0;
+
+            let leader = null;
+            let maxMoves = 0;
+
             Object.entries(countries).forEach(([id, country]) => {
-                if (country.moves > maxMoves && country.moves > 10) { maxMoves = country.moves; leader = id; }
+                if (country.moves > maxMoves && country.moves > 10) {
+                    maxMoves = country.moves;
+                    leader = id;
+                }
             });
+
+            // If leader changed, announce it
             if (leader && leader !== gameState.currentLeader) {
                 gameState.currentLeader = leader;
                 speakCheer(leader);
             }
         }
 
+        // Periodic cheer for current leader (every 15-20 seconds)
         function startCheerSystem() {
             initSpeech();
+
             gameState.cheerInterval = setInterval(() => {
-                if (gameState.currentLeader && !gameState.isVictoryMode) speakCheer(gameState.currentLeader);
+                if (gameState.currentLeader && !gameState.isVictoryMode) {
+                    speakCheer(gameState.currentLeader);
+                }
             }, 15000 + Math.random() * 5000);
         }
 
@@ -1014,30 +1806,81 @@
             speechEnabled = !speechEnabled;
             const btn = document.getElementById('audio-toggle');
             btn.textContent = speechEnabled ? '🔊' : '🔇';
-            if (!speechEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+            btn.title = speechEnabled ? 'Mute cheers' : 'Enable cheers';
+            
+            if (!speechEnabled && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+            
             showGiftNotification(speechEnabled ? '🔊' : '🔇', speechEnabled ? 'Audio ON' : 'Audio OFF', 'boost');
+        }
+
+        // Test button to manually trigger cheers - cycles through all countries
+        let testCheerIndex = 0;
+        const countryIds = ['colombia', 'venezuela', 'ecuador', 'mexico', 'elsalvador', 'nicaragua', 'guatemala', 'peru', 'puertorico', 'dominicana', 'chile', 'trump'];
+
+        function testCheer() {
+            const id = countryIds[testCheerIndex];
+            testCheerIndex = (testCheerIndex + 1) % countryIds.length;
+            
+            // Force the cheer even if one just played
+            gameState.lastCheerTime = 0;
+            speakCheer(id, true);
+        }
+
+        // Test all countries in sequence
+        let testAllInterval = null;
+        
+        function testAllCheers() {
+            if (testAllInterval) {
+                clearInterval(testAllInterval);
+                testAllInterval = null;
+                showGiftNotification('⏹️', 'Stopped', 'sabotage');
+                return;
+            }
+            
+            testCheerIndex = 0;
+            showGiftNotification('🔊', 'Testing All!', 'boost');
+            
+            // Play first one immediately
+            testCheer();
+            
+            // Then cycle through rest every 5 seconds
+            testAllInterval = setInterval(() => {
+                if (testCheerIndex === 0) {
+                    // We've gone through all, stop
+                    clearInterval(testAllInterval);
+                    testAllInterval = null;
+                    showGiftNotification('✅', 'Test Done!', 'boost');
+                    return;
+                }
+                testCheer();
+            }, 5000);
         }
 
         // ==================== STORAGE ====================
         function loadDailyWins() {
-            try {
-                const today = new Date().toDateString();
-                const stored = localStorage.getItem('scribbleWar_dailyWins');
-                if (stored) { const data = JSON.parse(stored); if (data.date === today) return data.wins; }
-            } catch (e) {}
+            const today = new Date().toDateString();
+            const stored = localStorage.getItem('scribbleWar_dailyWins');
+            if (stored) {
+                const data = JSON.parse(stored);
+                if (data.date === today) return data.wins;
+            }
             return {};
         }
 
         function saveDailyWins() {
-            try {
-                localStorage.setItem('scribbleWar_dailyWins', JSON.stringify({ date: new Date().toDateString(), wins: gameState.dailyWins }));
-            } catch (e) {}
+            localStorage.setItem('scribbleWar_dailyWins', JSON.stringify({
+                date: new Date().toDateString(),
+                wins: gameState.dailyWins
+            }));
         }
 
         // ==================== UI GENERATION ====================
         function createCountryCards() {
             const grid = document.getElementById('cards-grid');
             grid.innerHTML = '';
+
             Object.entries(countries).forEach(([id, country]) => {
                 const card = document.createElement('div');
                 card.className = 'country-card';
@@ -1045,6 +1888,7 @@
                 card.style.setProperty('--country-color', country.color);
                 card.style.setProperty('--country-glow', country.glow);
                 card.style.setProperty('--country-color-light', country.color + 'cc');
+                
                 card.innerHTML = `
                     <div class="country-label">
                         <span class="country-name">${country.name}</span>
@@ -1054,77 +1898,138 @@
                         <div class="progress-fill" id="fill-${id}">
                             <img class="country-image" src="${country.image}" alt="${country.name}" onerror="this.src='https://flagcdn.com/w160/un.png'">
                         </div>
-                        <span class="progress-text" id="text-${id}">0/${CONFIG.maxMoves}</span>
+                        <span class="progress-text" id="text-${id}">0%</span>
                     </div>
                 `;
+
                 card.onclick = () => selectCountry(id);
-                card.ontouchstart = (e) => { e.preventDefault(); selectCountry(id); };
+                card.ontouchstart = (e) => {
+                    e.preventDefault();
+                    selectCountry(id);
+                };
+
                 grid.appendChild(card);
             });
+
             selectCountry('colombia');
         }
 
         function selectCountry(countryId) {
             gameState.selectedCountry = countryId;
-            document.querySelectorAll('.country-card').forEach(c => c.classList.remove('selected'));
-            const sel = document.getElementById(`card-${countryId}`);
-            if (sel) sel.classList.add('selected');
+
+            document.querySelectorAll('.country-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            const selectedCard = document.getElementById(`card-${countryId}`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+
             if (navigator.vibrate) navigator.vibrate(20);
         }
 
-        // ==================== PROGRESS BAR ====================
+        // ==================== PROGRESS BAR UPDATE ====================
         function updateProgressBar(countryId) {
             const country = countries[countryId];
             if (!country) return;
+
             const percent = (country.moves / CONFIG.maxMoves) * 100;
+
             const fillEl = document.getElementById(`fill-${countryId}`);
             const textEl = document.getElementById(`text-${countryId}`);
-            if (fillEl) fillEl.style.width = `${Math.min(100, Math.max(15, percent))}%`;
-            if (textEl) textEl.textContent = `${country.moves}/${CONFIG.maxMoves}`;
-            if (country.moves >= CONFIG.maxMoves && !gameState.isVictoryMode) triggerVictory(countryId);
+
+            if (fillEl) {
+                const displayWidth = Math.max(15, percent);
+                fillEl.style.width = `${Math.min(100, displayWidth)}%`;
+            }
+            if (textEl) {
+                textEl.textContent = `${country.moves}/${CONFIG.maxMoves}`;
+            }
+
+            if (country.moves >= CONFIG.maxMoves && !gameState.isVictoryMode) {
+                triggerVictory(countryId);
+            }
         }
 
         // ==================== MOVE HANDLERS ====================
+        
+        // Comment trigger (+1 move)
         function handleComment(countryId, username) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
+            
             addMoves(countryId, CONFIG.commentMoves, username);
             addFeedItem(username, 'comentó', countryId, '💬', 'comment');
         }
 
+        // Small gift trigger (+2 moves)
         function handleSmallGift(countryId, username, giftName) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
+
             const country = countries[countryId];
             addMoves(countryId, CONFIG.smallGiftMoves, username);
+            
             showGiftNotification(country.smallEmoji, '+2', 'boost');
             addFeedItem(username, 'regaló', countryId, country.smallEmoji, 'gift');
         }
 
+        // MEGA BOOST trigger (+125 moves with EXTREME epic animation)
         function handleMegaBoost(countryId, username, giftName) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
+
             const country = countries[countryId];
+            
+            // EPIC visual effects
             const card = document.getElementById(`card-${countryId}`);
             const fillEl = document.getElementById(`fill-${countryId}`);
             const flashEl = document.getElementById('mega-flash');
-            if (flashEl) { flashEl.classList.add('active'); setTimeout(() => flashEl.classList.remove('active'), 500); }
-            if (card) { card.classList.add('mega-boost'); setTimeout(() => card.classList.remove('mega-boost'), 1000); }
-            if (fillEl) { fillEl.classList.add('boosting'); setTimeout(() => fillEl.classList.remove('boosting'), 1000); }
+            
+            // Screen flash
+            if (flashEl) {
+                flashEl.classList.add('active');
+                setTimeout(() => flashEl.classList.remove('active'), 500);
+            }
+            
+            if (card) {
+                card.classList.add('mega-boost');
+                setTimeout(() => card.classList.remove('mega-boost'), 1000);
+            }
+            
+            if (fillEl) {
+                fillEl.classList.add('boosting');
+                setTimeout(() => fillEl.classList.remove('boosting'), 1000);
+            }
+            
+            // Play epic sound
             playBoostSound();
+            
+            // Add the moves
             addMoves(countryId, CONFIG.boostMoves, username);
+            
             showGiftNotification(country.boostEmoji, '🚀 MEGA BOOST +125!', 'mega');
             addFeedItem(username, '¡MEGA BOOST!', countryId, country.boostEmoji, 'mega');
         }
 
+        // Core function to add moves and update bar
         function addMoves(countryId, moveCount, username) {
             const country = countries[countryId];
             if (!country) return;
+
             country.moves = Math.min(CONFIG.maxMoves, country.moves + moveCount);
-            if (username) country.contributors[username] = (country.contributors[username] || 0) + moveCount;
+            
+            if (username) {
+                country.contributors[username] = (country.contributors[username] || 0) + moveCount;
+            }
+
             gameState.totalActions += moveCount;
+            
+            // Trigger green glow
             const fillEl = document.getElementById(`fill-${countryId}`);
             if (fillEl && !fillEl.classList.contains('boosting')) {
                 fillEl.classList.add('moving');
                 setTimeout(() => fillEl.classList.remove('moving'), 400);
             }
+            
             updateProgressBar(countryId);
             updateUI();
             checkLeaderAndCheer();
@@ -1133,167 +2038,152 @@
         function playBoostSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Epic rising power-up sound
                 const notes = [300, 400, 500, 600, 700, 800, 1000, 1200, 1500, 1800];
                 notes.forEach((freq, i) => {
-                    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                    osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.type = i < 5 ? 'sine' : 'triangle'; osc.frequency.value = freq;
-                    const st = audioCtx.currentTime + (i * 0.06);
-                    gain.gain.setValueAtTime(0.25, st);
-                    gain.gain.exponentialRampToValueAtTime(0.01, st + 0.12);
-                    osc.start(st); osc.stop(st + 0.12);
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = i < 5 ? 'sine' : 'triangle';
+                    osc.frequency.value = freq;
+                    const startTime = audioCtx.currentTime + (i * 0.06);
+                    gain.gain.setValueAtTime(0.25, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.12);
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.12);
                 });
+                
+                // Add a final "boom" bass hit
                 setTimeout(() => {
-                    const bass = audioCtx.createOscillator(); const bg = audioCtx.createGain();
-                    bass.connect(bg); bg.connect(audioCtx.destination);
-                    bass.type = 'sine'; bass.frequency.value = 80;
-                    bg.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    bg.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    bass.start(); bass.stop(audioCtx.currentTime + 0.3);
+                    const bass = audioCtx.createOscillator();
+                    const bassGain = audioCtx.createGain();
+                    bass.connect(bassGain);
+                    bassGain.connect(audioCtx.destination);
+                    bass.type = 'sine';
+                    bass.frequency.value = 80;
+                    bassGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    bassGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    bass.start();
+                    bass.stop(audioCtx.currentTime + 0.3);
                 }, 500);
             } catch (e) {}
         }
 
+        function playAlarmSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch (e) {}
+        }
+
         // ==================== GIFT & COMMENT MATCHING ====================
+        
+        // Find country from comment text (name or abbreviation)
         function findCountryFromComment(comment) {
             const text = comment.toLowerCase().trim();
+            
             for (const [countryId, country] of Object.entries(countries)) {
-                if (text.includes(country.name.toLowerCase())) return countryId;
+                // Check full name
+                if (text.includes(country.name.toLowerCase())) {
+                    return countryId;
+                }
+                // Check abbreviations
                 for (const abbr of country.abbr) {
+                    // Match whole word or with common patterns
                     const regex = new RegExp(`\\b${abbr}\\b|^${abbr}$|#${abbr}\\b`, 'i');
-                    if (regex.test(text)) return countryId;
-                }
-            }
-            return null;
-        }
-
-        function findCountryForGift(giftName, giftId) {
-            const terms = [giftName?.toLowerCase() || '', giftId?.toString() || ''];
-            for (const [countryId, country] of Object.entries(countries)) {
-                for (const term of terms) {
-                    if (term && country.smallGifts.some(g => term.includes(g) || g.includes(term)))
-                        return { countryId, type: 'small' };
-                }
-                for (const term of terms) {
-                    if (term && country.boostGifts.some(g => term.includes(g) || g.includes(term)))
-                        return { countryId, type: 'boost' };
-                }
-            }
-            return null;
-        }
-
-        // ==================== PLAYROOM KIT – TIKTOK LIVE CONNECTION ====================
-        async function connectPlayroomTikTok() {
-            const statusEl = document.getElementById('connection-status');
-            const statusText = document.getElementById('status-text');
-
-            statusEl.className = 'connection-status connecting';
-            statusText.textContent = 'Conectando a TikTok…';
-
-            try {
-                // Initialize Playroom Kit in TikTok Live mode
-                await Playroom.insertCoin({
-                    liveMode: "tiktok"
-                });
-
-                // Connection established
-                gameState.connected = true;
-                statusEl.className = 'connection-status connected';
-                statusText.textContent = 'TikTok LIVE ✓';
-                console.log('✅ Playroom TikTok Live connected!');
-
-                // Listen for ALL TikTok Live events
-                Playroom.onTikTokLiveEvent((event) => {
-                    console.log('🎬 TikTok Live Event:', event);
-                    processTikTokEvent(event);
-                });
-
-            } catch (err) {
-                console.error('❌ Playroom connection error:', err);
-                gameState.connected = false;
-                statusEl.className = 'connection-status disconnected';
-                statusText.textContent = 'Error de conexión';
-
-                // Retry after 5 seconds
-                setTimeout(connectPlayroomTikTok, 5000);
-            }
-        }
-
-        // Process incoming TikTok Live events from Playroom Kit
-        function processTikTokEvent(event) {
-            const username = event.data?.username || 'Anon';
-            const type = event.type; // "chat", "like", "gift"
-
-            if (type === 'chat') {
-                // Comment: check if it mentions a country
-                const comment = event.data?.comment || '';
-                const countryId = findCountryFromComment(comment);
-                if (countryId) {
-                    handleComment(countryId, username);
-                }
-            }
-
-            else if (type === 'gift') {
-                // Gift: match gift name/ID to a country
-                const giftName = event.data?.giftName || event.data?.gift_name || '';
-                const giftId = event.data?.giftId || event.data?.gift_id || '';
-                const match = findCountryForGift(giftName, giftId);
-                if (match) {
-                    if (match.type === 'small') {
-                        handleSmallGift(match.countryId, username, giftName);
-                    } else if (match.type === 'boost') {
-                        handleMegaBoost(match.countryId, username, giftName);
+                    if (regex.test(text)) {
+                        return countryId;
                     }
                 }
             }
+            return null;
+        }
 
-            else if (type === 'like') {
-                // Like: give a small boost to the current leader or random country
-                if (gameState.currentLeader) {
-                    addMoves(gameState.currentLeader, 1, username);
-                } else {
-                    const ids = Object.keys(countries);
-                    const randomId = ids[Math.floor(Math.random() * ids.length)];
-                    addMoves(randomId, 1, username);
+        // Find country and gift type from gift name/id
+        function findCountryForGift(giftName, giftId) {
+            const terms = [giftName?.toLowerCase() || '', giftId?.toString() || ''];
+
+            for (const [countryId, country] of Object.entries(countries)) {
+                // Check small gifts (1-coin = 2 moves)
+                for (const term of terms) {
+                    if (term && country.smallGifts.some(g => term.includes(g) || g.includes(term))) {
+                        return { countryId, type: 'small' };
+                    }
+                }
+                // Check boost gifts (100-coin = 125 moves)
+                for (const term of terms) {
+                    if (term && country.boostGifts.some(g => term.includes(g) || g.includes(term))) {
+                        return { countryId, type: 'boost' };
+                    }
                 }
             }
+            return null;
         }
 
         // ==================== VICTORY ====================
         function triggerVictory(countryId) {
             const country = countries[countryId];
             gameState.isVictoryMode = true;
-            let topContributor = 'Anonymous', maxContributions = 0;
+
+            let topContributor = 'Anonymous';
+            let maxContributions = 0;
             Object.entries(country.contributors).forEach(([name, count]) => {
-                if (count > maxContributions) { maxContributions = count; topContributor = name; }
+                if (count > maxContributions) {
+                    maxContributions = count;
+                    topContributor = name;
+                }
             });
+
             gameState.dailyWins[countryId] = (gameState.dailyWins[countryId] || 0) + 1;
             saveDailyWins();
+
             document.getElementById('victory-image').src = country.image;
             document.getElementById('victory-country').textContent = country.name;
             document.getElementById('victory-contributor').textContent = `MVP: ${topContributor}`;
             document.getElementById('victory-overlay').classList.add('active');
+
             startFireworks();
+            
+            // Epic victory cheers - play 3 times
             speakCheer(countryId, true);
             setTimeout(() => speakCheer(countryId, true), 3000);
             setTimeout(() => speakCheer(countryId, true), 6000);
+
             let countdown = 10;
             const timerEl = document.getElementById('victory-timer');
             const interval = setInterval(() => {
                 countdown--;
                 timerEl.textContent = `Nueva ronda en ${countdown}s`;
-                if (countdown <= 0) { clearInterval(interval); resetRound(); }
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    resetRound();
+                }
             }, 1000);
         }
 
         function resetRound() {
             document.getElementById('victory-overlay').classList.remove('active');
             stopFireworks();
+
             Object.keys(countries).forEach(id => {
                 countries[id].moves = 0;
                 countries[id].contributors = {};
                 updateProgressBar(id);
             });
+
             gameState.roundNumber++;
             gameState.isVictoryMode = false;
             gameState.currentLeader = null;
@@ -1329,7 +2219,8 @@
 
         function stopFireworks() {
             fireworksRunning = false;
-            fireworks = []; particles = [];
+            fireworks = [];
+            particles = [];
             fireworksCtx.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
         }
 
@@ -1337,23 +2228,34 @@
             if (!fireworksRunning) return;
             fireworksCtx.fillStyle = 'rgba(0,0,0,0.15)';
             fireworksCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+
             fireworks = fireworks.filter(f => {
                 f.y -= f.speed;
                 fireworksCtx.beginPath();
                 fireworksCtx.arc(f.x, f.y, 3, 0, Math.PI * 2);
                 fireworksCtx.fillStyle = f.color;
                 fireworksCtx.fill();
+
                 if (f.y <= f.targetY) {
                     for (let i = 0; i < 40; i++) {
                         const angle = (Math.PI * 2 / 40) * i;
-                        particles.push({ x: f.x, y: f.y, vx: Math.cos(angle) * (2 + Math.random() * 3), vy: Math.sin(angle) * (2 + Math.random() * 3), color: f.color, life: 1 });
+                        particles.push({
+                            x: f.x, y: f.y,
+                            vx: Math.cos(angle) * (2 + Math.random() * 3),
+                            vy: Math.sin(angle) * (2 + Math.random() * 3),
+                            color: f.color, life: 1
+                        });
                     }
                     return false;
                 }
                 return true;
             });
+
             particles = particles.filter(p => {
-                p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life -= 0.02;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.08;
+                p.life -= 0.02;
                 fireworksCtx.globalAlpha = p.life;
                 fireworksCtx.beginPath();
                 fireworksCtx.arc(p.x, p.y, 2, 0, Math.PI * 2);
@@ -1362,6 +2264,7 @@
                 fireworksCtx.globalAlpha = 1;
                 return p.life > 0;
             });
+
             requestAnimationFrame(animateFireworks);
         }
 
@@ -1370,13 +2273,13 @@
             setInterval(() => {
                 if (gameState.isVictoryMode) return;
                 Object.keys(countries).forEach(id => {
-                    if (countries[id].moves > 0) {
-                        countries[id].moves = Math.max(0, countries[id].moves - CONFIG.decayAmount);
-                        updateProgressBar(id);
+                    if (countries[id].fillPercent > 0) {
+                        updateProgressBar(id, countries[id].fillPercent - CONFIG.decayAmount);
                     }
                 });
                 updateUI();
             }, CONFIG.decayInterval);
+
             setInterval(() => {
                 gameState.decayTimer--;
                 if (gameState.decayTimer <= 0) gameState.decayTimer = 15;
@@ -1404,6 +2307,7 @@
             const sorted = Object.entries(countries)
                 .map(([id, c]) => ({ id, ...c, wins: gameState.dailyWins[id] || 0 }))
                 .sort((a, b) => b.wins !== a.wins ? b.wins - a.wins : b.moves - a.moves);
+
             list.innerHTML = sorted.map((c, i) => `
                 <div class="ranking-item" style="--rank-color: ${c.color}; --rank-glow: ${c.glow}">
                     <div class="rank-badge ${i < 3 ? `rank-${i + 1}` : 'rank-other'}">${i + 1}</div>
@@ -1445,7 +2349,88 @@
             setTimeout(() => notif.remove(), 1200);
         }
 
-        // ==================== CONTROLS (TESTING) ====================
+        // ==================== WEBSOCKET ====================
+        function connectWebSocket() {
+            const statusEl = document.getElementById('connection-status');
+            const statusText = document.getElementById('status-text');
+            statusEl.className = 'connection-status connecting';
+            statusText.textContent = 'Connecting...';
+
+            try {
+                gameState.ws = new WebSocket(CONFIG.wsUrl);
+                gameState.ws.onopen = () => {
+                    gameState.connected = true;
+                    statusEl.className = 'connection-status connected';
+                    statusText.textContent = 'Connected';
+                };
+                gameState.ws.onclose = () => {
+                    gameState.connected = false;
+                    statusEl.className = 'connection-status disconnected';
+                    statusText.textContent = 'Disconnected';
+                    setTimeout(connectWebSocket, 5000);
+                };
+                gameState.ws.onerror = () => {
+                    statusEl.className = 'connection-status disconnected';
+                    statusText.textContent = 'Error';
+                };
+                gameState.ws.onmessage = (e) => {
+                    try {
+                        processMessage(JSON.parse(e.data));
+                    } catch (err) {}
+                };
+            } catch (e) {
+                statusEl.className = 'connection-status disconnected';
+                statusText.textContent = 'Failed';
+                setTimeout(connectWebSocket, 5000);
+            }
+        }
+
+        function processMessage(data) {
+            const username = data.uniqueId || data.nickname || 'Anonymous';
+            
+            // Handle comments - check for country name/abbreviation
+            if (data.type === 'chat' || data.comment) {
+                const comment = data.comment || data.text || '';
+                const countryId = findCountryFromComment(comment);
+                if (countryId) {
+                    handleComment(countryId, username);
+                }
+            }
+            
+            // Handle gifts
+            if (data.type === 'gift' || data.giftName || data.giftId) {
+                const match = findCountryForGift(data.giftName || data.gift, data.giftId || data.gift_id);
+                if (match) {
+                    if (match.type === 'small') {
+                        handleSmallGift(match.countryId, username, data.giftName);
+                    } else if (match.type === 'boost') {
+                        handleMegaBoost(match.countryId, username, data.giftName);
+                    }
+                }
+            }
+
+            // Handle likes - give +1 move to current leader or random country
+            if (data.type === 'like') {
+                const countryIds = Object.keys(countries);
+                let targetCountry;
+                // Find current leader
+                let maxMoves = 0;
+                countryIds.forEach(id => {
+                    if (gameState.moves[id] > maxMoves) {
+                        maxMoves = gameState.moves[id];
+                        targetCountry = id;
+                    }
+                });
+                // If no leader, pick random
+                if (!targetCountry || maxMoves === 0) {
+                    targetCountry = countryIds[Math.floor(Math.random() * countryIds.length)];
+                }
+                addMoves(targetCountry, CONFIG.commentMoves, username);
+                addFeedItem(username, '❤️ like', targetCountry, '❤️', 'comment');
+            }
+        }
+
+        // ==================== CONTROLS ====================
         function testAction(action) {
             if (!gameState.selectedCountry) {
                 showGiftNotification('👆', 'Select a country!', 'boost');
@@ -1454,9 +2439,14 @@
             const user = 'Tester_' + Math.floor(Math.random() * 1000);
             const country = countries[gameState.selectedCountry];
             if (navigator.vibrate) navigator.vibrate(action === 'mega' ? [50, 30, 50, 30, 50] : 30);
-            if (action === 'comment') handleComment(gameState.selectedCountry, user);
-            else if (action === 'small') handleSmallGift(gameState.selectedCountry, user, country.smallGifts[0]);
-            else if (action === 'mega') handleMegaBoost(gameState.selectedCountry, user, country.boostGifts[0]);
+
+            if (action === 'comment') {
+                handleComment(gameState.selectedCountry, user);
+            } else if (action === 'small') {
+                handleSmallGift(gameState.selectedCountry, user, country.smallGifts[0]);
+            } else if (action === 'mega') {
+                handleMegaBoost(gameState.selectedCountry, user, country.boostGifts[0]);
+            }
         }
 
         function togglePanel() {
@@ -1480,10 +2470,18 @@
                 const id = ids[Math.floor(Math.random() * ids.length)];
                 const users = ['Fan1', 'Pro2', 'Gift3', 'Star4', 'King5', 'Viewer6'];
                 const user = users[Math.floor(Math.random() * users.length)];
+                
                 const rand = Math.random();
-                if (rand < 0.5) handleComment(id, user);
-                else if (rand < 0.9) handleSmallGift(id, user, countries[id].smallGifts[0]);
-                else handleMegaBoost(id, user, countries[id].boostGifts[0]);
+                if (rand < 0.5) {
+                    // 50% chance: comment
+                    handleComment(id, user);
+                } else if (rand < 0.9) {
+                    // 40% chance: small gift
+                    handleSmallGift(id, user, countries[id].smallGifts[0]);
+                } else {
+                    // 10% chance: mega boost
+                    handleMegaBoost(id, user, countries[id].boostGifts[0]);
+                }
             }, 300);
         }
 
@@ -1496,19 +2494,24 @@
             }
         }
 
+        // ==================== SECRET TEST PANEL TOGGLE ====================
+        // Press T key to show/hide test controls (hidden from viewers by default)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 't' || e.key === 'T') {
+                const panel = document.getElementById('control-panel');
+                panel.classList.toggle('visible');
+            }
+        });
+
         // ==================== INIT ====================
         function init() {
             createCountryCards();
             updateUI();
+            connectWebSocket();
             startDecay();
             startCheerSystem();
-
-            // Connect via Playroom Kit TikTok Live Mode
-            connectPlayroomTikTok();
-
-            console.log('⚔️ Scribble War – Playroom Kit TikTok Live Mode');
-            console.log('📱 Mobile-responsive, self-contained HTML');
-            console.log('🔊 Spanish cheers enabled – tap 🔊 to mute');
+            console.log('⚔️ Scribble War Progress Bars Ready!');
+            console.log('🔊 Spanish cheers enabled - tap 🔊 to mute');
         }
 
         init();
