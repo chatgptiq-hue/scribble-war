@@ -989,93 +989,97 @@
 
         /* Activity Feed */
         .activity-feed {
-            position: fixed;
-            bottom: 100px;
-            left: 20px;
-            width: 300px;
-            max-height: 150px;
-            overflow: hidden;
-            z-index: 100;
-            display: none; /* Hidden - replaced by center popup */
+            display: none;
         }
-
         .feed-item {
             display: none;
         }
 
-        /* ==================== EPIC CENTER POPUP ==================== */
-        .epic-popup {
+        /* ==================== MULTI-SLOT POPUP SYSTEM ==================== */
+        
+        /* Popup container slots - positioned around the screen */
+        .popup-slot {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
             z-index: 600;
             pointer-events: none;
-            animation: epicPopIn 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+        }
+        
+        .popup-slot-0 { top: 8%; left: 50%; transform: translateX(-50%); }   /* Top center */
+        .popup-slot-1 { top: 35%; left: 50%; transform: translateX(-50%); }  /* Center */
+        .popup-slot-2 { bottom: 12%; left: 50%; transform: translateX(-50%); } /* Bottom center */
+        .popup-slot-3 { top: 20%; right: 5%; }                                /* Right side */
+        
+        /* Individual popup card */
+        .epic-popup {
+            animation: epicSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-align: center;
+        }
+        
+        .epic-popup.fade-out {
+            animation: epicFadeOut 0.5s ease forwards;
         }
         
         .epic-popup-card {
-            background: linear-gradient(135deg, rgba(255, 200, 0, 0.15) 0%, rgba(255, 150, 0, 0.1) 50%, rgba(255, 200, 0, 0.15) 100%);
-            border: 2px solid rgba(255, 200, 0, 0.6);
-            border-radius: 20px;
-            padding: 15px 30px;
+            background: linear-gradient(135deg, rgba(255, 200, 0, 0.12) 0%, rgba(255, 150, 0, 0.08) 50%, rgba(255, 200, 0, 0.12) 100%);
+            border: 2px solid rgba(255, 200, 0, 0.5);
+            border-radius: 16px;
+            padding: 10px 20px;
             backdrop-filter: blur(15px);
             box-shadow: 
-                0 0 30px rgba(255, 200, 0, 0.3),
-                0 0 60px rgba(255, 150, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 0 25px rgba(255, 200, 0, 0.2),
+                0 0 50px rgba(255, 150, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
-            gap: 14px;
-            min-width: 280px;
+            gap: 12px;
+            min-width: 220px;
+            max-width: 380px;
             position: relative;
             overflow: hidden;
         }
         
-        /* Shimmer effect */
+        /* Shimmer sweep */
         .epic-popup-card::before {
             content: '';
             position: absolute;
             top: -50%;
-            left: -50%;
+            left: -100%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.08) 50%, transparent 70%);
-            animation: shimmer 2s ease-in-out infinite;
+            background: linear-gradient(60deg, transparent 40%, rgba(255, 215, 0, 0.06) 50%, transparent 60%);
+            animation: shimmer 1.8s ease-in-out infinite;
         }
         
         @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        /* Corner decorations */
+        /* Corner sparkle */
         .epic-popup-card::after {
             content: '✦';
             position: absolute;
-            top: 6px;
-            right: 10px;
-            font-size: 14px;
-            color: rgba(255, 215, 0, 0.6);
+            top: 4px;
+            right: 8px;
+            font-size: 11px;
+            color: rgba(255, 215, 0, 0.5);
             animation: sparkleRotate 1.5s ease-in-out infinite;
         }
         
         @keyframes sparkleRotate {
-            0%, 100% { opacity: 0.4; transform: rotate(0deg) scale(0.8); }
-            50% { opacity: 1; transform: rotate(180deg) scale(1.2); }
+            0%, 100% { opacity: 0.3; transform: rotate(0deg) scale(0.7); }
+            50% { opacity: 1; transform: rotate(180deg) scale(1.1); }
         }
         
         .epic-popup-avatar {
-            width: 52px;
-            height: 52px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            border: 3px solid #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
             object-fit: cover;
             flex-shrink: 0;
             background: #2a2a3e;
@@ -1086,115 +1090,143 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 2px;
+            gap: 1px;
             z-index: 1;
+            flex: 1;
+            min-width: 0;
         }
         
         .epic-popup-user {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 900;
             color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
         
         .epic-popup-action {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.85);
             font-weight: 600;
         }
         
         .epic-popup-country {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 14px;
+            gap: 4px;
+            font-size: 12px;
             font-weight: 800;
             color: #fff;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
         .epic-popup-country img {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .epic-popup-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            z-index: 1;
+            flex-shrink: 0;
         }
         
         .epic-popup-emoji {
-            font-size: 40px;
-            flex-shrink: 0;
-            z-index: 1;
-            animation: emojiPulse 0.6s ease-in-out;
+            font-size: 32px;
+            animation: emojiPop 0.4s ease-out;
         }
         
-        @keyframes emojiPulse {
-            0% { transform: scale(0.3) rotate(-20deg); }
-            50% { transform: scale(1.3) rotate(5deg); }
+        @keyframes emojiPop {
+            0% { transform: scale(0.3) rotate(-15deg); }
+            60% { transform: scale(1.2) rotate(3deg); }
             100% { transform: scale(1) rotate(0deg); }
         }
         
         .epic-popup-moves {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 900;
             color: #00ff88;
-            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
             z-index: 1;
         }
         
-        /* Mega variant - bigger, more dramatic */
+        /* Combo counter - big animated number */
+        .epic-popup-combo {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ffcc00;
+            text-shadow: 0 0 15px rgba(255, 200, 0, 0.7);
+            animation: comboPulse 0.3s ease;
+        }
+        
+        @keyframes comboPulse {
+            0% { transform: scale(1.5); color: #fff; }
+            100% { transform: scale(1); color: #ffcc00; }
+        }
+        
+        /* === VARIANT: Gift (gold) === */
+        .epic-popup.gift .epic-popup-card {
+            border-color: rgba(255, 200, 0, 0.6);
+        }
+        
+        /* === VARIANT: Mega (orange/fire) === */
         .epic-popup.mega .epic-popup-card {
-            background: linear-gradient(135deg, rgba(255, 100, 0, 0.25) 0%, rgba(255, 50, 0, 0.15) 50%, rgba(255, 200, 0, 0.25) 100%);
-            border-color: rgba(255, 100, 0, 0.8);
+            background: linear-gradient(135deg, rgba(255, 100, 0, 0.2) 0%, rgba(255, 50, 0, 0.12) 50%, rgba(255, 200, 0, 0.2) 100%);
+            border-color: rgba(255, 100, 0, 0.7);
             box-shadow: 
-                0 0 50px rgba(255, 100, 0, 0.4),
-                0 0 100px rgba(255, 50, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            min-width: 340px;
-            padding: 20px 35px;
+                0 0 40px rgba(255, 100, 0, 0.35),
+                0 0 80px rgba(255, 50, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            padding: 14px 24px;
         }
+        .epic-popup.mega .epic-popup-user { font-size: 18px; }
+        .epic-popup.mega .epic-popup-emoji { font-size: 44px; }
+        .epic-popup.mega .epic-popup-moves { font-size: 26px; color: #ffcc00; text-shadow: 0 0 15px rgba(255, 200, 0, 0.7); }
+        .epic-popup.mega .epic-popup-avatar { width: 52px; height: 52px; border-color: #ff6600; }
         
-        .epic-popup.mega .epic-popup-user { font-size: 20px; }
-        .epic-popup.mega .epic-popup-emoji { font-size: 55px; }
-        .epic-popup.mega .epic-popup-moves { font-size: 32px; color: #ffcc00; text-shadow: 0 0 20px rgba(255, 200, 0, 0.8); }
-        .epic-popup.mega .epic-popup-avatar { width: 64px; height: 64px; border-color: #ff6600; }
-        
-        /* Comment variant - more subtle */
+        /* === VARIANT: Comment (cyan) === */
         .epic-popup.comment .epic-popup-card {
-            background: linear-gradient(135deg, rgba(0, 200, 255, 0.1) 0%, rgba(0, 150, 255, 0.08) 100%);
-            border-color: rgba(0, 200, 255, 0.4);
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
-            min-width: 240px;
-            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(0, 200, 255, 0.08) 0%, rgba(0, 150, 255, 0.05) 100%);
+            border-color: rgba(0, 200, 255, 0.35);
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.15);
+            padding: 8px 16px;
+            min-width: 200px;
         }
+        .epic-popup.comment .epic-popup-user { color: #00ddff; font-size: 13px; }
+        .epic-popup.comment .epic-popup-emoji { font-size: 22px; }
+        .epic-popup.comment .epic-popup-avatar { width: 34px; height: 34px; border-color: #00ddff; }
+        .epic-popup.comment .epic-popup-moves { font-size: 15px; }
         
-        .epic-popup.comment .epic-popup-user { color: #00ddff; font-size: 14px; }
-        .epic-popup.comment .epic-popup-emoji { font-size: 28px; }
-        .epic-popup.comment .epic-popup-avatar { width: 40px; height: 40px; border-color: #00ddff; }
-        .epic-popup.comment .epic-popup-moves { font-size: 18px; }
-        
-        /* Like variant */
+        /* === VARIANT: Like (pink) === */
         .epic-popup.like .epic-popup-card {
-            background: linear-gradient(135deg, rgba(255, 50, 100, 0.12) 0%, rgba(255, 0, 80, 0.08) 100%);
-            border-color: rgba(255, 50, 100, 0.4);
-            box-shadow: 0 0 20px rgba(255, 50, 100, 0.2);
-            min-width: 220px;
-            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(255, 50, 100, 0.08) 0%, rgba(255, 0, 80, 0.05) 100%);
+            border-color: rgba(255, 50, 100, 0.35);
+            box-shadow: 0 0 15px rgba(255, 50, 100, 0.15);
+            padding: 8px 16px;
+            min-width: 180px;
         }
+        .epic-popup.like .epic-popup-user { color: #ff6b9d; font-size: 13px; }
+        .epic-popup.like .epic-popup-emoji { font-size: 22px; }
+        .epic-popup.like .epic-popup-avatar { width: 34px; height: 34px; border-color: #ff6b9d; }
         
-        .epic-popup.like .epic-popup-user { color: #ff6b9d; font-size: 14px; }
-        .epic-popup.like .epic-popup-emoji { font-size: 28px; }
-        .epic-popup.like .epic-popup-avatar { width: 40px; height: 40px; border-color: #ff6b9d; }
-        
-        /* Sparkle particles around popup */
+        /* Sparkle particles */
         .popup-sparkle {
             position: absolute;
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background: #ffd700;
             border-radius: 50%;
-            animation: sparkleFly 1s ease-out forwards;
+            animation: sparkleFly 0.8s ease-out forwards;
             pointer-events: none;
         }
         
@@ -1203,17 +1235,18 @@
             100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
         }
         
-        @keyframes epicPopIn {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-5deg); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(2deg); }
-            25% { transform: translate(-50%, -50%) scale(0.95) rotate(-1deg); }
-            35% { transform: translate(-50%, -50%) scale(1.05) rotate(0deg); }
-            45% { transform: translate(-50%, -50%) scale(1); }
-            75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) translateY(-30px); }
+        @keyframes epicSlideIn {
+            0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+            60% { opacity: 1; transform: scale(1.08) translateY(-3px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        @keyframes epicFadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.85) translateY(-15px); }
         }
 
-        /* Gift Notification - keep for internal use */
+        /* Gift Notification - admin only */
         .gift-notification {
             position: fixed;
             top: 50%;
@@ -1225,7 +1258,7 @@
             animation: popIn 1.2s ease forwards;
             pointer-events: none;
             text-align: center;
-            display: none; /* Hidden - replaced by epic popup */
+            display: none;
         }
 
         @keyframes popIn {
@@ -1397,7 +1430,7 @@
         /* Hide control panel on small heights */
         @media (max-height: 700px) {
             .control-panel { display: none; }
-            .activity-feed { bottom: 10px; left: 10px; width: 250px; }
+            .popup-slot { transform: scale(0.85); }
         }
 
         /* Scrollbar */
@@ -1526,6 +1559,12 @@
 
     <!-- Activity Feed -->
     <div class="activity-feed" id="activity-feed"></div>
+    
+    <!-- Multi-slot popup system -->
+    <div class="popup-slot" id="popup-slot-0"></div>
+    <div class="popup-slot" id="popup-slot-1"></div>
+    <div class="popup-slot" id="popup-slot-2"></div>
+    <div class="popup-slot" id="popup-slot-3"></div>
 
     <!-- Victory Overlay -->
     <div class="victory-overlay" id="victory-overlay">
@@ -2661,7 +2700,6 @@
         function addFeedItem() {} // Replaced by epic popup
         
         function showGiftNotification(emoji, text, type) {
-            // Simple notification for admin/test use only
             const notif = document.createElement('div');
             notif.style.cssText = 'position:fixed;top:10px;right:10px;background:rgba(0,0,0,0.8);color:#ffd700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;z-index:999;animation:popIn 0.8s ease forwards;pointer-events:none;border:1px solid rgba(255,215,0,0.3);';
             notif.innerHTML = `${emoji} ${text}`;
@@ -2669,35 +2707,90 @@
             setTimeout(() => notif.remove(), 1500);
         }
         
-        // Queue system to prevent popup overlap
-        let popupQueue = [];
-        let popupActive = false;
+        // ==================== MULTI-SLOT POPUP SYSTEM ====================
+        // Slots: 0=top, 1=center, 2=bottom, 3=right
+        // Active popups tracked by username so combos update in-place
         
-        function showEpicPopup(username, profilePic, emoji, action, countryId, movesText, type) {
-            popupQueue.push({ username, profilePic, emoji, action, countryId, movesText, type });
-            if (!popupActive) processPopupQueue();
+        const activePopups = {};     // { username: { slot, element, timer, comboCount, type, countryId } }
+        const slotOccupied = [false, false, false, false];
+        const SLOT_PRIORITY = {
+            mega: [1, 0, 2, 3],     // Mega gets center first
+            gift: [0, 2, 3, 1],     // Gifts spread around
+            comment: [2, 3, 0, 1],  // Comments at bottom/sides
+            like: [3, 2, 0, 1],     // Likes on side
+        };
+        
+        function findFreeSlot(type) {
+            const priority = SLOT_PRIORITY[type] || [0, 1, 2, 3];
+            for (const s of priority) {
+                if (!slotOccupied[s]) return s;
+            }
+            // All full - steal lowest priority slot
+            return priority[priority.length - 1];
         }
         
-        function processPopupQueue() {
-            if (popupQueue.length === 0) { popupActive = false; return; }
-            popupActive = true;
-            
-            const { username, profilePic, emoji, action, countryId, movesText, type } = popupQueue.shift();
+        function showEpicPopup(username, profilePic, emoji, action, countryId, movesText, type) {
             const country = countries[countryId];
-            if (!country) { processPopupQueue(); return; }
+            if (!country) return;
             
-            // Get stored pic if none provided
             const pic = profilePic || (gameState.userPics && gameState.userPics[username]) || '';
+            
+            // Check if this user already has an active popup (combo!)
+            const existing = activePopups[username];
+            if (existing && existing.countryId === countryId && (type === 'gift' || type === 'like')) {
+                // Update existing popup - combo mode
+                existing.comboCount++;
+                const totalMoves = existing.comboCount * (type === 'gift' ? CONFIG.smallGiftMoves : CONFIG.commentMoves);
+                
+                // Update the combo counter
+                const comboEl = existing.element.querySelector('.epic-popup-combo');
+                if (comboEl) {
+                    comboEl.textContent = `x${existing.comboCount} COMBO`;
+                    comboEl.style.animation = 'none';
+                    void comboEl.offsetWidth; // Force reflow
+                    comboEl.style.animation = 'comboPulse 0.3s ease';
+                }
+                
+                // Update moves
+                const movesEl = existing.element.querySelector('.epic-popup-moves');
+                if (movesEl) movesEl.textContent = `+${totalMoves}`;
+                
+                // Pulse the card
+                const card = existing.element.querySelector('.epic-popup-card');
+                if (card) {
+                    card.style.transform = 'scale(1.06)';
+                    setTimeout(() => card.style.transform = '', 150);
+                }
+                
+                // Reset timer - keep showing while combo continues
+                clearTimeout(existing.timer);
+                existing.timer = setTimeout(() => removePopup(username), 2500);
+                return;
+            }
+            
+            // New popup - find a slot
+            const slot = findFreeSlot(type);
+            
+            // If slot occupied, remove the old one
+            for (const [uname, info] of Object.entries(activePopups)) {
+                if (info.slot === slot) {
+                    removePopup(uname, true); // Force immediate remove
+                }
+            }
+            
+            const slotEl = document.getElementById(`popup-slot-${slot}`);
+            if (!slotEl) return;
             
             const popup = document.createElement('div');
             popup.className = `epic-popup ${type}`;
             
-            const duration = type === 'mega' ? 3000 : type === 'comment' || type === 'like' ? 1800 : 2200;
+            const isComboType = (type === 'gift' || type === 'like');
+            const initialMoves = movesText;
             
             popup.innerHTML = `
                 <div class="epic-popup-card">
                     ${pic ? `<img class="epic-popup-avatar" src="${pic}" alt="" onerror="this.style.display='none'">` : 
-                    `<div class="epic-popup-avatar" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:#2a2a3e;">👤</div>`}
+                    `<div class="epic-popup-avatar" style="display:flex;align-items:center;justify-content:center;font-size:18px;background:#2a2a3e;">👤</div>`}
                     <div class="epic-popup-info">
                         <div class="epic-popup-user">${username}</div>
                         <div class="epic-popup-action">${action}</div>
@@ -2705,37 +2798,67 @@
                             <img src="${country.image}" alt="" onerror="this.style.display='none'">
                             ${country.name}
                         </div>
+                        ${isComboType ? '<div class="epic-popup-combo"></div>' : ''}
                     </div>
-                    <div class="epic-popup-emoji">${emoji}</div>
-                    <div class="epic-popup-moves">${movesText}</div>
+                    <div class="epic-popup-right">
+                        <div class="epic-popup-emoji">${emoji}</div>
+                        <div class="epic-popup-moves">${initialMoves}</div>
+                    </div>
                 </div>
             `;
             
-            document.body.appendChild(popup);
+            slotEl.innerHTML = '';
+            slotEl.appendChild(popup);
+            slotOccupied[slot] = true;
             
-            // Add sparkle particles
+            // Add sparkles for gifts/mega
             if (type === 'gift' || type === 'mega') {
                 setTimeout(() => {
-                    for (let i = 0; i < (type === 'mega' ? 12 : 6); i++) {
+                    const count = type === 'mega' ? 10 : 5;
+                    for (let i = 0; i < count; i++) {
                         const sparkle = document.createElement('div');
                         sparkle.className = 'popup-sparkle';
-                        const angle = (Math.PI * 2 * i) / (type === 'mega' ? 12 : 6);
-                        const dist = 80 + Math.random() * 60;
+                        const angle = (Math.PI * 2 * i) / count;
+                        const dist = 60 + Math.random() * 40;
                         sparkle.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
                         sparkle.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
                         sparkle.style.left = '50%';
                         sparkle.style.top = '50%';
                         sparkle.style.background = type === 'mega' ? '#ff6600' : '#ffd700';
-                        popup.appendChild(sparkle);
+                        popup.querySelector('.epic-popup-card').appendChild(sparkle);
                     }
-                }, 200);
+                }, 150);
             }
             
-            setTimeout(() => {
-                popup.remove();
-                // Small delay between popups
-                setTimeout(processPopupQueue, 150);
-            }, duration);
+            // Track it
+            const duration = type === 'mega' ? 3500 : type === 'comment' ? 2000 : type === 'like' ? 1800 : 2500;
+            const timer = setTimeout(() => removePopup(username), duration);
+            
+            activePopups[username] = {
+                slot,
+                element: popup,
+                timer,
+                comboCount: 1,
+                type,
+                countryId,
+            };
+        }
+        
+        function removePopup(username, immediate) {
+            const info = activePopups[username];
+            if (!info) return;
+            
+            clearTimeout(info.timer);
+            
+            if (immediate) {
+                info.element.remove();
+            } else {
+                info.element.classList.add('fade-out');
+                setTimeout(() => info.element.remove(), 500);
+            }
+            
+            slotOccupied[info.slot] = false;
+            delete activePopups[username];
         }
 
         // ==================== WEBSOCKET ====================
