@@ -1007,14 +1007,13 @@
             align-items: center;
         }
         
-        #popup-slot-0 { top: 6%; left: 30%; transform: translateX(-50%); }    /* Top left-center */
-        #popup-slot-1 { top: 38%; left: 30%; transform: translateX(-50%); }   /* Middle */
-        #popup-slot-2 { bottom: 8%; left: 30%; transform: translateX(-50%); }  /* Bottom */
-        #popup-slot-3 { top: 68%; left: 30%; transform: translateX(-50%); }    /* Lower-mid */
+        #popup-slot-0 { top: 5%; left: 25%; transform: translateX(-50%); }     /* Top-left area */
+        #popup-slot-1 { top: 40%; left: 45%; transform: translateX(-50%); }   /* Center-ish */
+        #popup-slot-2 { bottom: 5%; left: 20%; transform: translateX(-50%); }  /* Bottom-left */
+        #popup-slot-3 { top: 70%; left: 48%; transform: translateX(-50%); }    /* Lower-center */
         
         /* Individual popup card */
         .epic-popup {
-            animation: epicSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             text-align: center;
         }
         
@@ -1277,6 +1276,29 @@
             60% { opacity: 1; transform: scale(1.08) translateY(-3px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
+        
+        @keyframes epicSlideFromLeft {
+            0% { opacity: 0; transform: scale(0.5) translateX(-40px); }
+            60% { opacity: 1; transform: scale(1.06) translateX(5px); }
+            100% { opacity: 1; transform: scale(1) translateX(0); }
+        }
+        
+        @keyframes epicSlideFromRight {
+            0% { opacity: 0; transform: scale(0.5) translateX(40px); }
+            60% { opacity: 1; transform: scale(1.06) translateX(-5px); }
+            100% { opacity: 1; transform: scale(1) translateX(0); }
+        }
+        
+        @keyframes epicDropIn {
+            0% { opacity: 0; transform: scale(0.3) translateY(-30px) rotate(-5deg); }
+            60% { opacity: 1; transform: scale(1.1) translateY(5px) rotate(1deg); }
+            100% { opacity: 1; transform: scale(1) translateY(0) rotate(0); }
+        }
+        
+        #popup-slot-0 .epic-popup { animation: epicDropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        #popup-slot-1 .epic-popup { animation: epicSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        #popup-slot-2 .epic-popup { animation: epicSlideFromLeft 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        #popup-slot-3 .epic-popup { animation: epicSlideFromRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         @keyframes epicFadeOut {
             0% { opacity: 1; transform: scale(1); }
@@ -2838,6 +2860,12 @@
             slotEl.appendChild(popup);
             slotOccupied[slot] = true;
             
+            // Random jitter so popups don't stack exactly
+            const jitterX = (Math.random() - 0.5) * 80;  // ±40px
+            const jitterY = (Math.random() - 0.5) * 40;  // ±20px
+            slotEl.style.marginLeft = jitterX + 'px';
+            slotEl.style.marginTop = jitterY + 'px';
+            
             // Sparkles
             if (type === 'gift' || type === 'mega') {
                 setTimeout(() => {
@@ -2882,35 +2910,47 @@
             
             clearTimeout(info.timer);
             clearTimeout(info.safetyTimer);
-            
-            const slotEl = document.getElementById(`popup-slot-${info.slot}`);
-            
-            if (immediate) {
-                if (slotEl) slotEl.innerHTML = '';
-                if (info.element && info.element.parentNode) info.element.remove();
-            } else {
-                info.element.classList.add('fade-out');
-                setTimeout(() => {
-                    if (slotEl) slotEl.innerHTML = '';
-                    if (info.element && info.element.parentNode) info.element.remove();
-                }, 500);
-            }
-            
             slotOccupied[info.slot] = false;
             delete activePopups[username];
+            
+            const slotEl = document.getElementById(`popup-slot-${info.slot}`);
+            if (!slotEl) return;
+            
+            if (immediate) {
+                slotEl.innerHTML = '';
+                slotEl.style.marginLeft = '';
+                slotEl.style.marginTop = '';
+            } else {
+                if (info.element) info.element.classList.add('fade-out');
+                setTimeout(() => { 
+                    slotEl.innerHTML = ''; 
+                    slotEl.style.marginLeft = '';
+                    slotEl.style.marginTop = '';
+                }, 500);
+            }
         }
         
-        // SAFETY: Clean up any zombie popups every 4 seconds
+        // SAFETY: Nuke ALL popup slots every 5 seconds if they have no active owner
         setInterval(() => {
-            for (const [uname, info] of Object.entries(activePopups)) {
-                if (!info.element || !info.element.parentNode) {
-                    slotOccupied[info.slot] = false;
-                    clearTimeout(info.timer);
-                    clearTimeout(info.safetyTimer);
-                    delete activePopups[uname];
+            for (let i = 0; i < 4; i++) {
+                const slotEl = document.getElementById(`popup-slot-${i}`);
+                if (!slotEl) continue;
+                
+                // Check if any active popup owns this slot
+                let owned = false;
+                for (const info of Object.values(activePopups)) {
+                    if (info.slot === i) { owned = true; break; }
+                }
+                
+                // If no one owns it but it has content, nuke it
+                if (!owned && slotEl.innerHTML !== '') {
+                    slotEl.innerHTML = '';
+                    slotEl.style.marginLeft = '';
+                    slotEl.style.marginTop = '';
+                    slotOccupied[i] = false;
                 }
             }
-        }, 4000);
+        }, 3000);
 
         // ==================== WEBSOCKET ====================
         function connectWebSocket() {
