@@ -996,37 +996,224 @@
             max-height: 150px;
             overflow: hidden;
             z-index: 100;
+            display: none; /* Hidden - replaced by center popup */
         }
 
         .feed-item {
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 10px;
-            font-size: 12px;
-            animation: slideIn 0.3s ease;
+            display: none;
+        }
+
+        /* ==================== EPIC CENTER POPUP ==================== */
+        .epic-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 600;
+            pointer-events: none;
+            animation: epicPopIn 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .epic-popup-card {
+            background: linear-gradient(135deg, rgba(255, 200, 0, 0.15) 0%, rgba(255, 150, 0, 0.1) 50%, rgba(255, 200, 0, 0.15) 100%);
+            border: 2px solid rgba(255, 200, 0, 0.6);
+            border-radius: 20px;
+            padding: 15px 30px;
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 0 30px rgba(255, 200, 0, 0.3),
+                0 0 60px rgba(255, 150, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-left: 3px solid;
+            gap: 14px;
+            min-width: 280px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Shimmer effect */
+        .epic-popup-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.08) 50%, transparent 70%);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        /* Corner decorations */
+        .epic-popup-card::after {
+            content: '✦';
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            font-size: 14px;
+            color: rgba(255, 215, 0, 0.6);
+            animation: sparkleRotate 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkleRotate {
+            0%, 100% { opacity: 0.4; transform: rotate(0deg) scale(0.8); }
+            50% { opacity: 1; transform: rotate(180deg) scale(1.2); }
+        }
+        
+        .epic-popup-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #2a2a3e;
+            z-index: 1;
+        }
+        
+        .epic-popup-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            z-index: 1;
+        }
+        
+        .epic-popup-user {
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+        
+        .epic-popup-action {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+        
+        .epic-popup-country {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .epic-popup-country img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .epic-popup-emoji {
+            font-size: 40px;
+            flex-shrink: 0;
+            z-index: 1;
+            animation: emojiPulse 0.6s ease-in-out;
+        }
+        
+        @keyframes emojiPulse {
+            0% { transform: scale(0.3) rotate(-20deg); }
+            50% { transform: scale(1.3) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        
+        .epic-popup-moves {
+            font-size: 24px;
+            font-weight: 900;
+            color: #00ff88;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+            z-index: 1;
+        }
+        
+        /* Mega variant - bigger, more dramatic */
+        .epic-popup.mega .epic-popup-card {
+            background: linear-gradient(135deg, rgba(255, 100, 0, 0.25) 0%, rgba(255, 50, 0, 0.15) 50%, rgba(255, 200, 0, 0.25) 100%);
+            border-color: rgba(255, 100, 0, 0.8);
+            box-shadow: 
+                0 0 50px rgba(255, 100, 0, 0.4),
+                0 0 100px rgba(255, 50, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            min-width: 340px;
+            padding: 20px 35px;
+        }
+        
+        .epic-popup.mega .epic-popup-user { font-size: 20px; }
+        .epic-popup.mega .epic-popup-emoji { font-size: 55px; }
+        .epic-popup.mega .epic-popup-moves { font-size: 32px; color: #ffcc00; text-shadow: 0 0 20px rgba(255, 200, 0, 0.8); }
+        .epic-popup.mega .epic-popup-avatar { width: 64px; height: 64px; border-color: #ff6600; }
+        
+        /* Comment variant - more subtle */
+        .epic-popup.comment .epic-popup-card {
+            background: linear-gradient(135deg, rgba(0, 200, 255, 0.1) 0%, rgba(0, 150, 255, 0.08) 100%);
+            border-color: rgba(0, 200, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
+            min-width: 240px;
+            padding: 10px 20px;
+        }
+        
+        .epic-popup.comment .epic-popup-user { color: #00ddff; font-size: 14px; }
+        .epic-popup.comment .epic-popup-emoji { font-size: 28px; }
+        .epic-popup.comment .epic-popup-avatar { width: 40px; height: 40px; border-color: #00ddff; }
+        .epic-popup.comment .epic-popup-moves { font-size: 18px; }
+        
+        /* Like variant */
+        .epic-popup.like .epic-popup-card {
+            background: linear-gradient(135deg, rgba(255, 50, 100, 0.12) 0%, rgba(255, 0, 80, 0.08) 100%);
+            border-color: rgba(255, 50, 100, 0.4);
+            box-shadow: 0 0 20px rgba(255, 50, 100, 0.2);
+            min-width: 220px;
+            padding: 10px 20px;
+        }
+        
+        .epic-popup.like .epic-popup-user { color: #ff6b9d; font-size: 14px; }
+        .epic-popup.like .epic-popup-emoji { font-size: 28px; }
+        .epic-popup.like .epic-popup-avatar { width: 40px; height: 40px; border-color: #ff6b9d; }
+        
+        /* Sparkle particles around popup */
+        .popup-sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: sparkleFly 1s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes sparkleFly {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+        }
+        
+        @keyframes epicPopIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(-5deg); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(2deg); }
+            25% { transform: translate(-50%, -50%) scale(0.95) rotate(-1deg); }
+            35% { transform: translate(-50%, -50%) scale(1.05) rotate(0deg); }
+            45% { transform: translate(-50%, -50%) scale(1); }
+            75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) translateY(-30px); }
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .feed-item.boost { border-color: #00ff88; }
-        .feed-item.sabotage { border-color: #ff4444; }
-
-        .feed-emoji { font-size: 16px; }
-        .feed-user { color: #00ffff; font-weight: bold; }
-        .feed-action { color: #888; }
-        .feed-target { font-weight: 600; }
-        .feed-item.boost .feed-target { color: #00ff88; }
-        .feed-item.sabotage .feed-target { color: #ff4444; }
-
-        /* Gift Notification */
+        /* Gift Notification - keep for internal use */
         .gift-notification {
             position: fixed;
             top: 50%;
@@ -1038,24 +1225,7 @@
             animation: popIn 1.2s ease forwards;
             pointer-events: none;
             text-align: center;
-        }
-
-        .gift-notification .emoji { font-size: 70px; display: block; }
-        .gift-notification.boost { color: #00ff88; text-shadow: 0 0 30px rgba(0, 255, 136, 0.8); }
-        .gift-notification.comment { color: #6366f1; text-shadow: 0 0 30px rgba(99, 102, 241, 0.8); }
-        .gift-notification.mega { 
-            color: #ffcc00; 
-            text-shadow: 0 0 40px rgba(255, 200, 0, 1), 0 0 80px rgba(255, 102, 0, 0.8);
-            animation: megaNotification 1.5s ease forwards;
-        }
-
-        @keyframes megaNotification {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3) rotate(-10deg); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.4) rotate(5deg); }
-            40% { transform: translate(-50%, -50%) scale(1.2) rotate(-3deg); }
-            60% { transform: translate(-50%, -50%) scale(1.3) rotate(2deg); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9) translateY(-50px); }
+            display: none; /* Hidden - replaced by epic popup */
         }
 
         @keyframes popIn {
@@ -1610,7 +1780,8 @@
             demoInterval: null,
             currentLeader: null,
             cheerInterval: null,
-            lastCheerTime: 0
+            lastCheerTime: 0,
+            userTeams: {} // Track which country each viewer supports: { username: countryId }
         };
 
         // ==================== SPANISH CHEERS ====================
@@ -1682,11 +1853,11 @@
                 "¡Ceacheí, ceacheí, viva Chile!"
             ],
             trump: [
-                "Chi-na! Chi-na! Chi-na!",
                 "Money money money! Trump is winning!",
                 "Make America Great Again!",
                 "We're winning, we're winning big league!",
-                "Tremendous! Absolutely tremendous!"
+                "Tremendous! Absolutely tremendous!",
+                "Nobody does it better, believe me!"
             ]
         };
 
@@ -2000,11 +2171,14 @@
         // ==================== MOVE HANDLERS ====================
         
         // Comment trigger (+1 move)
-        function handleComment(countryId, username) {
+        function handleComment(countryId, username, profilePic) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
             
+            // Register this user's team
+            gameState.userTeams[username] = countryId;
+            
             addMoves(countryId, CONFIG.commentMoves, username);
-            addFeedItem(username, 'comentó', countryId, '💬', 'comment');
+            showEpicPopup(username, profilePic, '💬', 'comentó', countryId, '+1', 'comment');
             
             // Quick pulse on the bar
             const card = document.getElementById(`card-${countryId}`);
@@ -2015,8 +2189,11 @@
         }
 
         // Small gift trigger (+2 moves)
-        function handleSmallGift(countryId, username, giftName) {
+        function handleSmallGift(countryId, username, giftName, profilePic) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
+
+            // Register this user's team
+            gameState.userTeams[username] = countryId;
 
             const country = countries[countryId];
             addMoves(countryId, CONFIG.smallGiftMoves, username);
@@ -2035,13 +2212,16 @@
                 }, 500);
             }
             
-            showGiftNotification(country.giftImage ? `<img src="${country.giftImage}" style="width:50px;height:50px;object-fit:contain;">` : country.smallEmoji, '+2', 'boost');
-            addFeedItem(username, 'regaló', countryId, country.smallEmoji, 'gift');
+            const emojiHtml = country.giftImage ? `<img src="${country.giftImage}" style="width:40px;height:40px;object-fit:contain;">` : country.smallEmoji;
+            showEpicPopup(username, profilePic, emojiHtml, '¡regaló!', countryId, '+2', 'gift');
         }
 
         // MEGA BOOST trigger (+125 moves with EXTREME epic animation)
-        function handleMegaBoost(countryId, username, giftName) {
+        function handleMegaBoost(countryId, username, giftName, profilePic) {
             if (!countries[countryId] || gameState.isVictoryMode) return;
+
+            // Register this user's team
+            gameState.userTeams[username] = countryId;
 
             const country = countries[countryId];
             
@@ -2079,8 +2259,7 @@
             // Add the moves
             addMoves(countryId, CONFIG.boostMoves, username);
             
-            showGiftNotification(country.boostEmoji, '🚀 ¡MEGA IMPULSO +125!', 'mega');
-            addFeedItem(username, '¡MEGA IMPULSO!', countryId, country.boostEmoji, 'mega');
+            showEpicPopup(username, profilePic, country.boostEmoji, '🚀 ¡MEGA IMPULSO!', countryId, '+125', 'mega');
         }
 
         // Core function to add moves and update bar
@@ -2479,28 +2658,84 @@
         }
 
         // ==================== FEED & NOTIFICATIONS ====================
-        function addFeedItem(user, action, countryId, emoji, type) {
-            const feed = document.getElementById('activity-feed');
-            const country = countries[countryId];
-            const item = document.createElement('div');
-            item.className = `feed-item ${type}`;
-            item.innerHTML = `
-                <span class="feed-emoji">${emoji}</span>
-                <span class="feed-user">${user}</span>
-                <span class="feed-action">${action}</span>
-                <span class="feed-target">${country.flag} ${country.name}</span>
-            `;
-            feed.insertBefore(item, feed.firstChild);
-            while (feed.children.length > 5) feed.removeChild(feed.lastChild);
-            setTimeout(() => { if (item.parentNode) item.remove(); }, 6000);
-        }
-
+        function addFeedItem() {} // Replaced by epic popup
+        
         function showGiftNotification(emoji, text, type) {
+            // Simple notification for admin/test use only
             const notif = document.createElement('div');
-            notif.className = `gift-notification ${type}`;
-            notif.innerHTML = `<span class="emoji">${emoji}</span>${text}`;
+            notif.style.cssText = 'position:fixed;top:10px;right:10px;background:rgba(0,0,0,0.8);color:#ffd700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;z-index:999;animation:popIn 0.8s ease forwards;pointer-events:none;border:1px solid rgba(255,215,0,0.3);';
+            notif.innerHTML = `${emoji} ${text}`;
             document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 1200);
+            setTimeout(() => notif.remove(), 1500);
+        }
+        
+        // Queue system to prevent popup overlap
+        let popupQueue = [];
+        let popupActive = false;
+        
+        function showEpicPopup(username, profilePic, emoji, action, countryId, movesText, type) {
+            popupQueue.push({ username, profilePic, emoji, action, countryId, movesText, type });
+            if (!popupActive) processPopupQueue();
+        }
+        
+        function processPopupQueue() {
+            if (popupQueue.length === 0) { popupActive = false; return; }
+            popupActive = true;
+            
+            const { username, profilePic, emoji, action, countryId, movesText, type } = popupQueue.shift();
+            const country = countries[countryId];
+            if (!country) { processPopupQueue(); return; }
+            
+            // Get stored pic if none provided
+            const pic = profilePic || (gameState.userPics && gameState.userPics[username]) || '';
+            
+            const popup = document.createElement('div');
+            popup.className = `epic-popup ${type}`;
+            
+            const duration = type === 'mega' ? 3000 : type === 'comment' || type === 'like' ? 1800 : 2200;
+            
+            popup.innerHTML = `
+                <div class="epic-popup-card">
+                    ${pic ? `<img class="epic-popup-avatar" src="${pic}" alt="" onerror="this.style.display='none'">` : 
+                    `<div class="epic-popup-avatar" style="display:flex;align-items:center;justify-content:center;font-size:22px;background:#2a2a3e;">👤</div>`}
+                    <div class="epic-popup-info">
+                        <div class="epic-popup-user">${username}</div>
+                        <div class="epic-popup-action">${action}</div>
+                        <div class="epic-popup-country">
+                            <img src="${country.image}" alt="" onerror="this.style.display='none'">
+                            ${country.name}
+                        </div>
+                    </div>
+                    <div class="epic-popup-emoji">${emoji}</div>
+                    <div class="epic-popup-moves">${movesText}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(popup);
+            
+            // Add sparkle particles
+            if (type === 'gift' || type === 'mega') {
+                setTimeout(() => {
+                    for (let i = 0; i < (type === 'mega' ? 12 : 6); i++) {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'popup-sparkle';
+                        const angle = (Math.PI * 2 * i) / (type === 'mega' ? 12 : 6);
+                        const dist = 80 + Math.random() * 60;
+                        sparkle.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+                        sparkle.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+                        sparkle.style.left = '50%';
+                        sparkle.style.top = '50%';
+                        sparkle.style.background = type === 'mega' ? '#ff6600' : '#ffd700';
+                        popup.appendChild(sparkle);
+                    }
+                }, 200);
+            }
+            
+            setTimeout(() => {
+                popup.remove();
+                // Small delay between popups
+                setTimeout(processPopupQueue, 150);
+            }, duration);
         }
 
         // ==================== WEBSOCKET ====================
@@ -2541,6 +2776,13 @@
 
         function processMessage(data) {
             const username = data.uniqueId || data.nickname || 'Anonymous';
+            const profilePic = data.profilePic || '';
+            
+            // Store profile pic for future use
+            if (profilePic) {
+                gameState.userPics = gameState.userPics || {};
+                gameState.userPics[username] = profilePic;
+            }
             
             console.log('📨 Received:', JSON.stringify(data).substring(0, 200));
             
@@ -2551,7 +2793,7 @@
                 const countryId = findCountryFromComment(comment);
                 if (countryId) {
                     console.log(`✅ Matched country: ${countryId}`);
-                    handleComment(countryId, username);
+                    handleComment(countryId, username, profilePic);
                 } else {
                     console.log(`❌ No country match for: "${comment}"`);
                 }
@@ -2567,31 +2809,25 @@
                 if (match) {
                     console.log(`✅ Gift matched: ${match.countryId} (${match.type})`);
                     if (match.type === 'small') {
-                        handleSmallGift(match.countryId, username, giftName);
+                        handleSmallGift(match.countryId, username, giftName, profilePic);
                     } else if (match.type === 'boost') {
-                        handleMegaBoost(match.countryId, username, giftName);
+                        handleMegaBoost(match.countryId, username, giftName, profilePic);
                     }
                 } else {
                     console.log(`❌ No gift match for: "${giftName}" (ID: ${giftId})`);
                 }
             }
 
-            // Handle likes - give +1 move to current leader or random country
+            // Handle likes - give +1 move to the country the user previously supported
             if (data.type === 'like') {
-                const countryIds = Object.keys(countries);
-                let targetCountry;
-                let maxMoves = 0;
-                countryIds.forEach(id => {
-                    if (countries[id].moves > maxMoves) {
-                        maxMoves = countries[id].moves;
-                        targetCountry = id;
-                    }
-                });
-                if (!targetCountry || maxMoves === 0) {
-                    targetCountry = countryIds[Math.floor(Math.random() * countryIds.length)];
+                const targetCountry = gameState.userTeams[username];
+                if (targetCountry && countries[targetCountry]) {
+                    addMoves(targetCountry, CONFIG.commentMoves, username);
+                    showEpicPopup(username, profilePic, '❤️', 'le dio like', targetCountry, '+1', 'like');
+                    console.log(`❤️ ${username} liked → ${targetCountry} (their team)`);
+                } else {
+                    console.log(`❤️ ${username} liked but has no team yet (ignored)`);
                 }
-                addMoves(targetCountry, CONFIG.commentMoves, username);
-                addFeedItem(username, '❤️ le dio like', targetCountry, '❤️', 'comment');
             }
         }
 
