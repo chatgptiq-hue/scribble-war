@@ -1707,7 +1707,7 @@
                 image: 'https://flagcdn.com/w160/ve.png',
                 moves: 0,
                 contributors: {},
-                smallGifts: ['lightning bolt', 'lightning', 'bolt', '5765'], // 1-coin
+                smallGifts: ['lightning bolt', 'lightning', 'bolt', 'lightning_bolt'], // 1-coin
                 boostGifts: ['cap', '5829'], // 99-coin
                 smallEmoji: '⚡',
                 giftImage: 'gifts/Lightning%20Bolt.png',
@@ -1752,7 +1752,7 @@
                 image: 'https://flagcdn.com/w160/sv.png',
                 moves: 0,
                 contributors: {},
-                smallGifts: ['heart puff', 'heartpuff', 'puff', '5659'], // 1-coin
+                smallGifts: ['heart puff', 'heartpuff', 'puff', 'heart_puff'], // 1-coin
                 boostGifts: ['confetti', '5839'], // 100-coin
                 smallEmoji: '💗',
                 giftImage: 'gifts/Heart%20Puff.png',
@@ -1768,7 +1768,7 @@
                 moves: 0,
                 contributors: {},
                 smallGifts: ['you\'re awesome', 'youre awesome', 'awesome', '5661'], // 1-coin
-                boostGifts: ['super gg', 'supergg', '5879'], // 100-coin
+                boostGifts: ['super gg', 'supergg', 'super_gg'], // 100-coin
                 smallEmoji: '🌟',
                 giftImage: 'gifts/You%27re%20Awesome.png',
                 boostEmoji: '🏆'
@@ -1827,7 +1827,7 @@
                 image: 'https://flagcdn.com/w160/do.png',
                 moves: 0,
                 contributors: {},
-                smallGifts: ['live', '5659'], // 1-coin
+                smallGifts: ['live', 'go live', 'live_logo'], // 1-coin
                 boostGifts: ['bowknot', 'bow', '5883'], // 100-coin
                 smallEmoji: '🔴',
                 giftImage: 'gifts/LIVE.png',
@@ -1843,7 +1843,7 @@
                 moves: 0,
                 contributors: {},
                 smallGifts: ['chili', 'chilli', 'chilli pepper', 'pepper', '5660'], // 1-coin
-                boostGifts: ['mishka bear', 'mishka', 'bear', '5879'], // 100-coin
+                boostGifts: ['mishka bear', 'mishka', 'bear', 'mishka_bear'], // 100-coin
                 smallEmoji: '🌶️',
                 giftImage: 'gifts/Chili.png',
                 boostEmoji: '🧸'
@@ -1857,7 +1857,7 @@
                 image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg',
                 moves: 0,
                 contributors: {},
-                smallGifts: ['it\'s corn', 'its corn', 'corn', '5765'], // 1-coin
+                smallGifts: ['it\'s corn', 'its corn', 'corn', 'its_corn'], // 1-coin
                 boostGifts: ['hat and mustache', 'hat mustache', 'mustache', '5884'], // 99-coin
                 smallEmoji: '🌽',
                 giftImage: 'gifts/It%27s%20Corn.png',
@@ -2545,22 +2545,43 @@
             const name = (giftName || '').toLowerCase().trim();
             const id = (giftId || '').toString().trim();
 
+            console.log(`🔍 Searching gift: name="${name}" id="${id}"`);
+            
+            // Pass 1: Exact name match or ID match (highest priority)
             for (const [countryId, country] of Object.entries(countries)) {
-                // Check small gifts (1-coin = 2 moves)
                 for (const g of country.smallGifts) {
-                    if ((name && (name.includes(g) || g.includes(name))) ||
-                        (id && id === g)) {
+                    if ((name && name === g.toLowerCase()) || (id && id === g)) {
+                        console.log(`🎯 EXACT match "${name}" → ${countryId} (small, "${g}")`);
                         return { countryId, type: 'small' };
                     }
                 }
-                // Check boost gifts (100-coin = 125 moves)
                 for (const g of country.boostGifts) {
-                    if ((name && (name.includes(g) || g.includes(name))) ||
-                        (id && id === g)) {
+                    if ((name && name === g.toLowerCase()) || (id && id === g)) {
+                        console.log(`🎯 EXACT match "${name}" → ${countryId} (BOOST, "${g}")`);
                         return { countryId, type: 'boost' };
                     }
                 }
             }
+            
+            // Pass 2: Partial match, but only for patterns 4+ chars (avoids "gg" matching "super gg")
+            for (const [countryId, country] of Object.entries(countries)) {
+                for (const g of country.smallGifts) {
+                    const gl = g.toLowerCase();
+                    if (gl.length >= 4 && name.length >= 4 && (name.includes(gl) || gl.includes(name))) {
+                        console.log(`🎯 Partial match "${name}" → ${countryId} (small, "${g}")`);
+                        return { countryId, type: 'small' };
+                    }
+                }
+                for (const g of country.boostGifts) {
+                    const gl = g.toLowerCase();
+                    if (gl.length >= 4 && name.length >= 4 && (name.includes(gl) || gl.includes(name))) {
+                        console.log(`🎯 Partial match "${name}" → ${countryId} (BOOST, "${g}")`);
+                        return { countryId, type: 'boost' };
+                    }
+                }
+            }
+            
+            console.log(`⚠️ NO MATCH for gift: "${name}" (ID: ${id}) — add this name to a country's gift list!`);
             return null;
         }
 
